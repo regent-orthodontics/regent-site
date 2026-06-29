@@ -1,233 +1,489 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
+const title = 'Regent Orthodontics — Specialist Orthodontic Clinic · Newtownards · Opening December';
+const description = "Ards and North Down's first boutique specialist orthodontic clinic. Specialist-led private and NHS treatment, opening on Regent Street, Newtownards in December.";
+const siteUrl = 'https://regentorthodontics.com';
 
-const title = 'Regent Orthodontics — Specialist Orthodontist Newtownards · NHS & Private';
-const description = 'Specialist-led orthodontic clinic on Regent Street, Newtownards. NHS & private treatment for children and adults — braces, clear aligners, retainers. Now accepting new patients across Ards & North Down. Opening November 2026.';
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Dentist',
+  'name': 'Regent Orthodontics',
+  'image': `${siteUrl}/clinic.png`,
+  'logo': `${siteUrl}/logo.png`,
+  'url': siteUrl,
+  'email': 'admin@regentorthodontics.com',
+  'priceRange': 'NHS + Private',
+  'medicalSpecialty': 'Orthodontics',
+  'description': description,
+  'address': {
+    '@type': 'PostalAddress',
+    'streetAddress': '11 Regent Street',
+    'addressLocality': 'Newtownards',
+    'addressRegion': 'County Down',
+    'postalCode': 'BT23 4AB',
+    'addressCountry': 'GB'
+  },
+  'geo': { '@type': 'GeoCoordinates', 'latitude': 54.5910, 'longitude': -5.6920 },
+  'areaServed': [
+    { '@type': 'City', 'name': 'Newtownards' },
+    { '@type': 'City', 'name': 'Bangor' },
+    { '@type': 'City', 'name': 'Comber' },
+    { '@type': 'City', 'name': 'Holywood' },
+    { '@type': 'AdministrativeArea', 'name': 'Ards and North Down' }
+  ],
+  'openingHoursSpecification': [{
+    '@type': 'OpeningHoursSpecification',
+    'dayOfWeek': ['Monday','Tuesday','Wednesday','Thursday','Friday'],
+    'opens': '09:00',
+    'closes': '17:30'
+  }],
+  'employee': [
+    {
+      '@type': 'Person',
+      'name': 'Dr Diego Chavesta Rivadeneyra',
+      'jobTitle': 'Specialist Orthodontist',
+      'identifier': 'GDC 206244'
+    },
+    {
+      '@type': 'Person',
+      'name': 'Yesica Alves Barreto',
+      'jobTitle': 'Orthodontic Therapist',
+      'identifier': 'GDC 269728'
+    }
+  ]
+};
 ---
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="generator" content={Astro.generator} />
+  <meta name="theme-color" content="#1a1816" />
 
-<BaseLayout {title} {description}>
-  <header class="topbar">
-    <div class="wrap topbar-inner">
-      <a class="brand" href="/">
-        <span class="brand-mark">RO</span>
-        <span class="brand-name">Regent Orthodontics</span>
-      </a>
-      <nav class="nav">
-        <a href="#treatments">Treatments</a>
-        <a href="#about">About</a>
-        <a href="#fees">Fees</a>
-        <a href="#referrals">Referrals</a>
-        <a href="#contact" class="cta-mini">Book a consultation</a>
-      </nav>
-    </div>
-  </header>
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <link rel="canonical" href={siteUrl} />
 
-  <section class="hero">
-    <div class="wrap hero-inner">
-      <p class="kicker">Specialist Orthodontist · Newtownards · BT23 4AB</p>
-      <h1>Specialist orthodontic care<br/>for the Ards and North Down.</h1>
-      <p class="lede">
-        A purpose-built specialist clinic on Regent Street, Newtownards. NHS and private treatment for children, teens and adults — fixed braces, clear aligners, retainers and complex care, led by a GDC-registered Specialist in Orthodontics.
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Regent Orthodontics · Newtownards" />
+  <meta property="og:description" content={description} />
+  <meta property="og:url" content={siteUrl} />
+  <meta property="og:site_name" content="Regent Orthodontics" />
+  <meta property="og:locale" content="en_GB" />
+  <meta property="og:image" content={`${siteUrl}/clinic.png`} />
+  <meta property="og:image:width" content="1388" />
+  <meta property="og:image:height" content="1013" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Regent Orthodontics · Newtownards" />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={`${siteUrl}/clinic.png`} />
+
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="apple-touch-icon" href="/logo.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preload" as="image" href="/clinic.png" fetchpriority="high" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..600,0..100;1,9..144,300..600,0..100&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+</head>
+<body>
+  <main class="stage">
+
+    <!-- Left: editorial content -->
+    <section class="content" aria-label="Clinic introduction">
+      <header class="brand-line" data-reveal="1">
+        <img src="/logo.png" alt="Regent Orthodontics" class="brand-mark" width="120" height="120" />
+      </header>
+
+      <p class="eyebrow" data-reveal="2">
+        <span class="dot" aria-hidden="true"></span>
+        Newtownards · Northern Ireland
       </p>
-      <p class="hero-cta">
-        <a href="#contact" class="btn-primary">Book a free consultation</a>
-        <a href="#referrals" class="btn-secondary">Refer a patient</a>
+
+      <h1 class="headline" data-reveal="3">
+        Specialist orthodontic care<br/>
+        <em>coming&nbsp;soon</em><br/>
+        to Regent Street.
+      </h1>
+
+      <p class="subtitle" data-reveal="4">
+        Ards and North Down's first boutique specialist orthodontic practice. Opening December to private and NHS patients.
       </p>
-      <p class="hero-meta">Opening November 2026 · NHS (HSC) + Private from day one</p>
-    </div>
-  </section>
 
-  <section class="strip">
-    <div class="wrap strip-grid">
-      <div><strong>GDC-registered</strong> Specialist Orthodontist (#206244)</div>
-      <div><strong>NHS + Private</strong> from day one</div>
-      <div><strong>Two clinicians</strong> · Specialist + Orthodontic Therapist</div>
-      <div><strong>Now accepting</strong> new patients across Ards &amp; North Down</div>
-    </div>
-  </section>
+      <div class="rule" data-reveal="5" aria-hidden="true"></div>
 
-  <section id="treatments" class="section">
-    <div class="wrap">
-      <h2>Treatments</h2>
-      <p class="section-lede">Specialist orthodontic care for every age, every smile.</p>
-      <div class="cards">
-        <article class="card">
-          <h3>Children &amp; teens</h3>
-          <p>Early interceptive treatment, fixed braces and clear aligners for growing patients — NHS funded under HSC for IOTN 4/5 cases.</p>
-        </article>
-        <article class="card">
-          <h3>Adult orthodontics</h3>
-          <p>Clear aligners, lingual and tooth-coloured braces. Private treatment plans tailored to lifestyle and outcome goals.</p>
-        </article>
-        <article class="card">
-          <h3>Complex &amp; orthognathic</h3>
-          <p>Multidisciplinary planning for severe malocclusion, surgical orthodontics and joint cases with restorative colleagues.</p>
-        </article>
-        <article class="card">
-          <h3>Retainers &amp; review</h3>
-          <p>Long-term retention plans, replacement retainers and post-treatment reviews — protecting your investment for life.</p>
-        </article>
-      </div>
-    </div>
-  </section>
-
-  <section id="about" class="section section-alt">
-    <div class="wrap">
-      <h2>Specialist-led, family-owned.</h2>
-      <p>Regent Orthodontics is a family-owned, specialist orthodontic clinic in central Newtownards. Founded by Dr Diego Chavesta-Rivadeneyra — a UK-registered Specialist in Orthodontics with over a decade of clinical experience — and co-director Yesica Alves Barreto, a GDC-registered Orthodontic Therapist and Practice Manager.</p>
-      <p>We exist for one reason: to make excellent, modern orthodontic care available locally in the Ards and North Down area, without long referral journeys to Belfast.</p>
-    </div>
-  </section>
-
-  <section id="fees" class="section">
-    <div class="wrap">
-      <h2>Fees &amp; funding</h2>
-      <p class="section-lede">Transparent pricing. NHS and private pathways clearly explained at your first visit.</p>
-      <p class="placeholder">Detailed fee schedule will be published before opening. For an indicative quote, please contact us.</p>
-    </div>
-  </section>
-
-  <section id="referrals" class="section section-alt">
-    <div class="wrap">
-      <h2>For GDPs &amp; referrers</h2>
-      <p>We accept private and NHS referrals from general dental practitioners across Ards, North Down and Belfast. A dedicated referrer portal with secure document upload will go live before opening — in the meantime, please email referrals to <a href="mailto:referrals@regentorthodontics.com">referrals@regentorthodontics.com</a> or call the practice.</p>
-    </div>
-  </section>
-
-  <section id="contact" class="section">
-    <div class="wrap">
-      <h2>Contact &amp; visit us</h2>
-      <div class="contact-grid">
+      <dl class="meta" data-reveal="6">
         <div>
-          <h3>Address</h3>
-          <p>11 Regent Street<br/>Newtownards<br/>County Down · BT23 4AB<br/>Northern Ireland</p>
+          <dt>Address</dt>
+          <dd>11 Regent Street<br/>Newtownards · BT23&nbsp;4AB</dd>
         </div>
         <div>
-          <h3>Email</h3>
-          <p><a href="mailto:admin@regentorthodontics.com">admin@regentorthodontics.com</a></p>
-          <h3>Hours (from opening)</h3>
-          <p>Monday – Friday<br/>09:00 – 17:30</p>
+          <dt>Contact</dt>
+          <dd><a href="mailto:admin@regentorthodontics.com">admin@regentorthodontics.com</a></dd>
         </div>
-      </div>
-    </div>
-  </section>
+        <div class="team">
+          <dt>Clinical team</dt>
+          <dd>
+            <p class="person">
+              <span class="person-name">Dr Diego Chavesta Rivadeneyra</span>
+              <span class="person-role">Specialist Orthodontist · <span class="dim">GDC&nbsp;206244</span></span>
+            </p>
+            <p class="person">
+              <span class="person-name">Yesica Alves Barreto</span>
+              <span class="person-role">Orthodontic Therapist · <span class="dim">GDC&nbsp;269728</span></span>
+            </p>
+          </dd>
+        </div>
+      </dl>
 
-  <footer class="footer">
-    <div class="wrap footer-inner">
-      <div>
-        <strong>Regent Orthodontics</strong><br/>
-        Trading name of DY Destiny Limited (NI695932)<br/>
-        Registered in Northern Ireland · GDC #206244
+      <footer class="legal" data-reveal="7">
+        <span>Trading name of DY Destiny Limited (NI695932)</span>
+        <span class="sep" aria-hidden="true">·</span>
+        <span>Registered in Northern Ireland</span>
+      </footer>
+    </section>
+
+    <!-- Right: image hero -->
+    <aside class="visual" aria-hidden="true">
+      <div class="visual-frame">
+        <img src="/clinic.png" alt="" class="clinic-img" width="1388" height="1013" />
+        <div class="visual-overlay"></div>
+        <div class="visual-grain"></div>
       </div>
-      <div class="footer-meta">
-        © {new Date().getFullYear()} DY Destiny Limited · All rights reserved
-      </div>
-    </div>
-  </footer>
-</BaseLayout>
+      <p class="caption">A render of the future clinic · 11 Regent Street</p>
+    </aside>
+
+  </main>
+</body>
+</html>
+
+<style is:global>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  html, body { height: 100%; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #1a1816;
+    color: #f0ebe0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: 'kern' 1, 'liga' 1;
+    overflow-x: hidden;
+  }
+  ::selection { background: #b8956a; color: #1a1816; }
+  ::-moz-selection { background: #b8956a; color: #1a1816; }
+  a { color: inherit; text-decoration: none; }
+  img { max-width: 100%; display: block; }
+
+  /* Focus rings — invisible expensive */
+  *:focus { outline: none; }
+  *:focus-visible {
+    outline: 1.5px solid #d4b88a;
+    outline-offset: 4px;
+    border-radius: 2px;
+  }
+
+  /* Motion — respect preferences */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+</style>
 
 <style>
-  .wrap { max-width: var(--max-w); margin: 0 auto; padding: 0 24px; }
+  :root {
+    --ink: #1a1816;
+    --ink-soft: #2a2521;
+    --cream: #f5f0e8;
+    --paper: #f0ebe0;
+    --gold: #b8956a;
+    --gold-light: #d4b88a;
+    --gold-dim: #8a7155;
+    --mute: #8a847b;
+    --line: rgba(212, 184, 138, 0.18);
+  }
 
-  /* Topbar */
-  .topbar {
-    border-bottom: 1px solid var(--border);
-    background: rgba(255,255,255,0.96);
-    position: sticky; top: 0; z-index: 50;
-    backdrop-filter: saturate(180%) blur(8px);
-  }
-  .topbar-inner {
-    display: flex; align-items: center; justify-content: space-between;
-    height: 64px;
-  }
-  .brand { display: flex; align-items: center; gap: 10px; color: var(--brand-deep); font-weight: 700; }
-  .brand-mark {
-    width: 34px; height: 34px; display: grid; place-items: center;
-    background: var(--brand-deep); color: #fff; border-radius: 7px;
-    font-size: 13px; letter-spacing: 0.05em;
-  }
-  .brand-name { font-size: 16px; }
-  .nav { display: flex; gap: 22px; align-items: center; font-size: 14px; }
-  .nav a { color: var(--text-soft); }
-  .nav a.cta-mini {
-    background: var(--brand-deep); color: #fff; padding: 8px 14px; border-radius: 6px;
-  }
-  .nav a.cta-mini:hover { background: var(--brand-teal); color: #fff; }
-
-  /* Hero */
-  .hero {
-    background:
-      radial-gradient(1200px 400px at 80% -20%, rgba(46,139,158,0.18), transparent 60%),
-      linear-gradient(180deg, #f4f8fa 0%, #fff 100%);
-    padding: 88px 0 96px;
-  }
-  .kicker {
-    color: var(--brand-teal); font-weight: 700; font-size: 12px;
-    letter-spacing: 0.18em; text-transform: uppercase; margin: 0 0 18px;
-  }
-  .hero h1 {
-    font-size: clamp(34px, 5vw, 56px);
-    color: var(--brand-deep);
-    margin: 0 0 22px;
-    max-width: 22ch;
-  }
-  .lede { font-size: clamp(16px, 1.4vw, 19px); color: var(--text-soft); max-width: 62ch; margin: 0 0 28px; }
-  .hero-cta { display: flex; gap: 14px; flex-wrap: wrap; margin: 0 0 18px; }
-  .btn-primary, .btn-secondary {
-    display: inline-block; padding: 14px 22px; border-radius: 8px;
-    font-weight: 600; font-size: 15px;
-  }
-  .btn-primary { background: var(--brand-deep); color: #fff; }
-  .btn-primary:hover { background: var(--brand-teal); color: #fff; }
-  .btn-secondary { background: #fff; color: var(--brand-deep); border: 1.5px solid var(--brand-deep); }
-  .btn-secondary:hover { background: var(--brand-deep); color: #fff; }
-  .hero-meta { font-size: 13px; color: var(--text-mute); margin-top: 18px; }
-
-  /* Strip */
-  .strip {
-    background: var(--brand-deep);
-    color: #fff; padding: 18px 0; font-size: 14px;
-  }
-  .strip-grid {
-    display: grid; gap: 18px;
-    grid-template-columns: repeat(4, 1fr);
-  }
-  .strip strong { color: #fff; }
-  @media (max-width: 800px) { .strip-grid { grid-template-columns: 1fr 1fr; } .nav { display: none; } }
-
-  /* Sections */
-  .section { padding: 80px 0; }
-  .section h2 { font-size: clamp(26px, 3vw, 34px); margin-bottom: 12px; }
-  .section-lede { color: var(--text-soft); max-width: 60ch; margin: 0 0 32px; font-size: 17px; }
-  .section-alt { background: #f4f8fa; }
-
-  .cards {
-    display: grid; gap: 18px;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  }
-  .card {
-    background: #fff; border: 1px solid var(--border); border-radius: 10px;
-    padding: 22px 22px 20px;
-  }
-  .card h3 { font-size: 18px; color: var(--brand-deep); margin: 0 0 8px; }
-  .card p { margin: 0; color: var(--text-soft); font-size: 14.5px; }
-
-  .placeholder { color: var(--text-mute); font-style: italic; }
-
-  .contact-grid {
-    display: grid; gap: 28px;
+  .stage {
+    min-height: 100vh;
+    min-height: 100svh;
+    display: grid;
     grid-template-columns: 1fr 1fr;
+    align-items: stretch;
   }
-  .contact-grid h3 { font-size: 16px; color: var(--brand-deep); margin: 0 0 6px; }
-  .contact-grid p { margin: 0 0 18px; color: var(--text-soft); }
-  @media (max-width: 600px) { .contact-grid { grid-template-columns: 1fr; } }
 
-  /* Footer */
-  .footer {
-    background: #14506b; color: #cdd9e0; padding: 32px 0; font-size: 13px;
+  /* ============ LEFT: editorial content ============ */
+  .content {
+    padding: 56px clamp(40px, 5vw, 80px) 48px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    background:
+      radial-gradient(800px 400px at 20% 20%, rgba(184, 149, 106, 0.06), transparent 60%),
+      var(--ink);
   }
-  .footer-inner {
-    display: flex; justify-content: space-between; gap: 22px; flex-wrap: wrap;
+
+  .brand-line {
+    margin-bottom: clamp(40px, 6vh, 64px);
   }
-  .footer-meta { color: #8ea4af; }
+  .brand-mark {
+    width: clamp(120px, 14vw, 168px);
+    height: auto;
+    background: var(--cream);
+    border-radius: 14px;
+    padding: 10px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--gold-light);
+    font-weight: 500;
+    margin-bottom: 28px;
+  }
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--gold);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 0.35; transform: scale(1); }
+    50%      { opacity: 1;    transform: scale(1.25); }
+  }
+
+  .headline {
+    font-family: 'Fraunces', 'Tiempos Headline', Georgia, serif;
+    font-weight: 380;
+    font-size: clamp(34px, 5.4vw, 64px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--paper);
+    font-variation-settings: 'opsz' 144, 'SOFT' 30;
+    margin-bottom: 26px;
+    max-width: 14ch;
+  }
+  .headline em {
+    font-style: italic;
+    color: var(--gold-light);
+    font-weight: 360;
+    font-variation-settings: 'opsz' 144, 'SOFT' 100;
+  }
+
+  .subtitle {
+    font-size: clamp(15px, 1.05vw, 17px);
+    line-height: 1.55;
+    color: #cbc3b8;
+    max-width: 44ch;
+    margin-bottom: 44px;
+    font-weight: 400;
+  }
+
+  .rule {
+    width: 56px;
+    height: 1px;
+    background: linear-gradient(to right, var(--gold), transparent);
+    margin-bottom: 36px;
+  }
+
+  .meta {
+    display: grid;
+    grid-template-columns: minmax(160px, 1fr) minmax(180px, 1fr);
+    grid-template-areas:
+      "addr  contact"
+      "team  team";
+    gap: 28px 36px;
+    margin-bottom: clamp(56px, 9vh, 88px);
+    max-width: 620px;
+  }
+  .meta > div:nth-child(1) { grid-area: addr; }
+  .meta > div:nth-child(2) { grid-area: contact; }
+  .meta > div.team        { grid-area: team; padding-top: 4px; border-top: 1px solid var(--line); margin-top: 4px; }
+
+  .meta dt {
+    font-size: 10.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--mute);
+    margin-bottom: 10px;
+    font-weight: 500;
+  }
+  .meta dd {
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--paper);
+  }
+  .meta dd a {
+    color: var(--gold-light);
+    position: relative;
+    display: inline-block;
+  }
+  .meta dd a::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 100%; bottom: -2px;
+    height: 1px;
+    background: var(--gold-light);
+    transition: right 0.45s cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  .meta dd a:hover::after { right: 0; }
+  .meta .dim { color: var(--mute); font-size: 12px; }
+
+  .team dd {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px 36px;
+    padding-top: 14px;
+  }
+  .person {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .person-name {
+    font-size: 14px;
+    color: var(--paper);
+    font-weight: 500;
+    letter-spacing: -0.005em;
+  }
+  .person-role {
+    font-size: 12.5px;
+    color: var(--mute);
+    line-height: 1.5;
+  }
+
+  .legal {
+    font-size: 11px;
+    color: var(--mute);
+    letter-spacing: 0.04em;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .legal .sep { color: var(--gold-dim); }
+
+  /* ============ RIGHT: image hero ============ */
+  .visual {
+    position: relative;
+    overflow: hidden;
+    background: #0e0c0a;
+  }
+  .visual-frame {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+  .clinic-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+  .visual-overlay {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(110deg, rgba(26,24,22,0.55) 0%, rgba(26,24,22,0.18) 30%, transparent 55%),
+      linear-gradient(to top, rgba(26,24,22,0.45) 0%, transparent 35%);
+    pointer-events: none;
+  }
+  .visual-grain {
+    position: absolute;
+    inset: 0;
+    opacity: 0.06;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='200' height='200' filter='url(%23n)' opacity='0.8'/></svg>");
+  }
+  .caption {
+    position: absolute;
+    bottom: 22px;
+    right: 28px;
+    font-size: 10.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(245, 240, 232, 0.6);
+    font-weight: 500;
+  }
+
+  /* ============ Reveal-on-load ============ */
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(14px);
+    animation: rise 0.9s cubic-bezier(0.2, 0.6, 0.2, 1) forwards;
+  }
+  [data-reveal="1"] { animation-delay: 0.05s; }
+  [data-reveal="2"] { animation-delay: 0.18s; }
+  [data-reveal="3"] { animation-delay: 0.30s; }
+  [data-reveal="4"] { animation-delay: 0.48s; }
+  [data-reveal="5"] { animation-delay: 0.62s; }
+  [data-reveal="6"] { animation-delay: 0.70s; }
+  [data-reveal="7"] { animation-delay: 0.86s; }
+  @keyframes rise {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ============ Mobile — DESIGNED not shrunk ============ */
+  @media (max-width: 900px) {
+    .stage {
+      grid-template-columns: 1fr;
+      grid-template-rows: 38vh auto;
+    }
+    .visual {
+      order: -1;
+      min-height: 38vh;
+    }
+    .visual-overlay {
+      background:
+        linear-gradient(to bottom, transparent 50%, rgba(26,24,22,0.7) 100%);
+    }
+    .caption { bottom: 14px; right: 18px; font-size: 9.5px; }
+    .content {
+      padding: 36px 28px 40px;
+      justify-content: flex-start;
+    }
+    .brand-line { margin-bottom: 24px; }
+    .brand-mark { width: 96px; padding: 8px; border-radius: 12px; }
+    .headline {
+      font-size: clamp(28px, 8vw, 40px);
+      max-width: 18ch;
+      margin-bottom: 18px;
+    }
+    .subtitle { margin-bottom: 32px; max-width: none; }
+    .rule { margin-bottom: 26px; }
+    .meta { gap: 22px; margin-bottom: 36px; }
+    .legal { font-size: 10.5px; }
+  }
+
+  @media (max-width: 480px) {
+    .stage { grid-template-rows: 32vh auto; }
+    .content { padding: 28px 22px 32px; }
+    .brand-line { margin-bottom: 20px; }
+    .brand-mark { width: 80px; padding: 7px; border-radius: 10px; }
+    .headline { font-size: 30px; }
+    .meta {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "addr"
+        "contact"
+        "team";
+      gap: 20px;
+    }
+    .team dd {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+  }
 </style>
