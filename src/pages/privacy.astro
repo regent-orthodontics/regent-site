@@ -1,0 +1,158 @@
+---
+import { SITE } from '../config';
+const title = `Privacy notice — ${SITE.name}`;
+const updated = '29 June 2026';
+---
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{title}</title>
+  <meta name="description" content="How Regent Orthodontics processes personal data of waitlist registrants and website visitors." />
+  <link rel="canonical" href={`${SITE.url}/privacy`} />
+  <meta name="robots" content="noindex, follow" />
+
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..600,0..100&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <a href="/" class="back">← Back</a>
+
+  <main class="prose">
+    <p class="kicker">Privacy notice</p>
+    <h1>How we look after your data.</h1>
+    <p class="meta">Last updated · {updated}</p>
+
+    <h2>Who we are</h2>
+    <p>This website is operated by <strong>{SITE.legalName}</strong> ({SITE.companyNumber}), trading as <strong>Regent Orthodontics</strong>, registered in Northern Ireland. Our registered place of business is <strong>{SITE.address.line1}, {SITE.address.city}, {SITE.address.region}, {SITE.address.postcode}, {SITE.address.country}</strong>. For all data-protection matters, contact <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.</p>
+
+    <h2>What we collect on this site</h2>
+    <p>If you complete the <a href="/register">waitlist registration form</a>, we collect: your first name, last name, email address, optional mobile number, treatment route preference (NHS or private), age group, any free-text notes you choose to share, and the timestamp of your submission. We also record the source of the submission (e.g. "website") and your browser's user-agent string for diagnostic purposes only. We do not run analytics or set tracking cookies on this site.</p>
+
+    <h2>Why we hold it</h2>
+    <p>We hold this information for one purpose: to contact you about availability of an initial consultation at Regent Orthodontics once we open. Our lawful basis is <strong>your explicit consent</strong>, given when you tick the consent box on the form. You can withdraw consent at any time by emailing <a href={`mailto:${SITE.email}?subject=Unsubscribe%20from%20waitlist`}>{SITE.email}</a> or by replying <em>unsubscribe</em> to any communication from us — we will erase your record promptly.</p>
+
+    <h2>Where it lives</h2>
+    <p>Submissions are stored in a private Google Workspace spreadsheet owned by {SITE.legalName} and accessible only to the directors of the company. We do not pass this list to third parties. We do not use it for marketing of unrelated products. We do not enrol you in any newsletter without further consent.</p>
+
+    <h2>How long we keep it</h2>
+    <p>We retain waitlist entries until <strong>twelve months after the clinic opens</strong> ({SITE.openingMonth} 2026). After that period, any record where the registrant has not become a patient of the clinic is erased. Patients who proceed to clinical care become subject to the separate clinical-records retention policy of the practice (mandatory minimum retention for NHS and private dental records under the Northern Ireland Dental Practice regulations).</p>
+
+    <h2>Your rights</h2>
+    <p>Under UK GDPR and the Data Protection Act 2018 you have the right to: access the data we hold about you; request correction of inaccurate data; request erasure of your data; restrict or object to our processing; withdraw consent at any time; and lodge a complaint with the UK Information Commissioner's Office (<a href="https://ico.org.uk" target="_blank" rel="noopener">ico.org.uk</a>). To exercise any of these rights, email <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.</p>
+
+    <h2>Cookies and tracking</h2>
+    <p>This pre-launch site does not set any cookies and does not run third-party analytics or tracking pixels. Google Fonts are served from <code>fonts.googleapis.com</code> and <code>fonts.gstatic.com</code> — Google's font-serving policy applies to that single connection (no cookies set). When the full clinic site goes live, this notice will be updated to reflect any analytics added then.</p>
+
+    <h2>Changes to this notice</h2>
+    <p>If we change this notice we will update the date at the top. Material changes affecting active waitlist registrants will be notified by email.</p>
+
+    <p class="legal-foot">
+      © {new Date().getFullYear()} {SITE.legalName} ({SITE.companyNumber}) · Registered in Northern Ireland<br/>
+      Specialist Orthodontist · Dr Diego Chavesta Rivadeneyra · GDC&nbsp;{SITE.gdc.diego}<br/>
+      Orthodontic Therapist · Yesica Alves Barreto · GDC&nbsp;{SITE.gdc.yesica}
+    </p>
+  </main>
+
+  <style is:global>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #1a1816;
+      color: #cbc3b8;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+    ::selection { background: #b8956a; color: #1a1816; }
+    *:focus { outline: none; }
+    *:focus-visible { outline: 1.5px solid #d4b88a; outline-offset: 4px; border-radius: 2px; }
+  </style>
+
+  <style>
+    .back {
+      position: absolute;
+      top: 28px;
+      left: clamp(20px, 4vw, 40px);
+      color: #8a847b;
+      font-size: 12px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: color 0.25s ease;
+    }
+    .back:hover { color: #d4b88a; }
+
+    .prose {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: clamp(64px, 12vh, 120px) clamp(22px, 4vw, 32px) clamp(48px, 8vh, 96px);
+      font-size: 15px;
+      line-height: 1.7;
+    }
+    .kicker {
+      font-size: 11px;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: #d4b88a;
+      font-weight: 500;
+      margin-bottom: 18px;
+    }
+    .prose h1 {
+      font-family: 'Fraunces', Georgia, serif;
+      font-weight: 380;
+      font-size: clamp(30px, 4.4vw, 44px);
+      line-height: 1.1;
+      letter-spacing: -0.018em;
+      color: #f0ebe0;
+      font-variation-settings: 'opsz' 144, 'SOFT' 30;
+      margin-bottom: 14px;
+    }
+    .meta {
+      color: #8a847b;
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      margin-bottom: 48px;
+    }
+    .prose h2 {
+      font-family: 'Fraunces', Georgia, serif;
+      font-weight: 400;
+      font-size: 20px;
+      color: #f0ebe0;
+      margin: 36px 0 12px;
+      font-variation-settings: 'opsz' 144, 'SOFT' 25;
+    }
+    .prose p {
+      margin-bottom: 14px;
+    }
+    .prose strong { color: #f0ebe0; font-weight: 500; }
+    .prose em { color: #d4b88a; font-style: italic; }
+    .prose code {
+      background: #221e1a;
+      color: #d4b88a;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 13px;
+      font-family: ui-monospace, 'SF Mono', monospace;
+    }
+    .prose a {
+      color: #d4b88a;
+      border-bottom: 1px solid rgba(212, 184, 138, 0.25);
+      transition: border-color 0.25s ease;
+    }
+    .prose a:hover { border-color: #d4b88a; }
+    .legal-foot {
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid rgba(212, 184, 138, 0.14);
+      font-size: 11.5px;
+      line-height: 1.7;
+      color: #8a847b;
+      letter-spacing: 0.02em;
+    }
+  </style>
+</body>
+</html>

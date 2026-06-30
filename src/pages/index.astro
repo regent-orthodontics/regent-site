@@ -113,6 +113,15 @@ const schema = {
         Ards and North Down's first boutique specialist orthodontic practice. Opening December to private and NHS patients.
       </p>
 
+      <p class="cta-line" data-reveal="5">
+        <a href="/register" class="cta-pill">
+          <span>Register your interest</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 12h14M13 5l7 7-7 7"/>
+          </svg>
+        </a>
+      </p>
+
       <div class="rule" data-reveal="5" aria-hidden="true"></div>
 
       <dl class="meta" data-reveal="6">
@@ -289,6 +298,25 @@ const schema = {
     margin-bottom: 44px;
     font-weight: 400;
   }
+
+  .cta-line { margin: 0 0 32px; }
+  .cta-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 22px;
+    border-radius: 999px;
+    background: var(--gold);
+    color: var(--ink);
+    font-size: 13.5px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    transition: background 0.25s ease, transform 0.15s ease;
+  }
+  .cta-pill svg { transition: transform 0.3s cubic-bezier(0.65, 0, 0.35, 1); }
+  .cta-pill:hover { background: var(--gold-light); color: var(--ink); }
+  .cta-pill:hover svg { transform: translateX(4px); }
+  .cta-pill:active { transform: scale(0.985); }
 
   .rule {
     width: 56px;
