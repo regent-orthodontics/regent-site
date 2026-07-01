@@ -45,7 +45,7 @@ const schema = {
     },
     {
       '@type': 'Person',
-      'name': 'Mrs. Yesica Alves Barreto',
+      'name': 'Yesica Alves Barreto',
       'jobTitle': 'Orthodontic Therapist',
       'identifier': 'GDC 269728'
     }
@@ -141,7 +141,7 @@ const schema = {
               <span class="person-role">Specialist Orthodontist · <span class="dim">GDC&nbsp;206244</span></span>
             </p>
             <p class="person">
-              <span class="person-name">Mrs. Yesica Alves Barreto</span>
+              <span class="person-name">Yesica Alves Barreto</span>
               <span class="person-role">Orthodontic Therapist · <span class="dim">GDC&nbsp;269728</span></span>
             </p>
           </dd>
@@ -153,6 +153,13 @@ const schema = {
         <span class="sep" aria-hidden="true">·</span>
         <span>Registered in Northern Ireland</span>
       </footer>
+
+      <aside class="careers" data-reveal="8" aria-label="Recruiting">
+        <span class="careers-label">Recruiting</span>
+        <p class="careers-body">
+          If you're interested in joining the team, please send your CV to <a href="mailto:admin@regentorthodontics.com?subject=CV%20%E2%80%94%20Regent%20Orthodontics">admin@regentorthodontics.com</a>.
+        </p>
+      </aside>
     </section>
 
     <!-- Right: image hero -->
@@ -402,6 +409,34 @@ const schema = {
   }
   .legal .sep { color: var(--gold-dim); }
 
+  .careers {
+    margin-top: 22px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+    max-width: 620px;
+  }
+  .careers-label {
+    display: block;
+    font-size: 10.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+  .careers-body {
+    font-size: 12.5px;
+    line-height: 1.65;
+    color: var(--mute);
+    letter-spacing: 0.01em;
+  }
+  .careers-body a {
+    color: var(--gold-light);
+    border-bottom: 1px solid rgba(212, 184, 138, 0.25);
+    transition: border-color 0.25s ease;
+  }
+  .careers-body a:hover { border-color: var(--gold-light); }
+
   /* ============ RIGHT: image hero ============ */
   .visual {
     position: relative;
@@ -416,8 +451,8 @@ const schema = {
   .clinic-img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    object-position: center;
+    object-fit: contain;
+    object-position: center bottom;
   }
   .visual-overlay {
     position: absolute;
@@ -459,6 +494,7 @@ const schema = {
   [data-reveal="5"] { animation-delay: 0.62s; }
   [data-reveal="6"] { animation-delay: 0.70s; }
   [data-reveal="7"] { animation-delay: 0.86s; }
+  [data-reveal="8"] { animation-delay: 0.98s; }
   @keyframes rise {
     to { opacity: 1; transform: translateY(0); }
   }
