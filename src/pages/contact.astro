@@ -8,7 +8,7 @@ const a = site.contact.address;
 const c = site.services.find((s) => s.slug === 'consultation');
 ---
 <Base title="Book a consultation"
-      description="Book an orthodontic consultation at Regent Orthodontics, 11 Regent Street, Newtownards BT23 4AB. No referral needed.">
+      description={`Book an orthodontic consultation at Regent Orthodontics, ${a.street}, ${a.locality} ${a.postcode}. No referral needed.`}>
   <PageHead eyebrow="Book a consultation"
             title={site.formEndpoint ? 'Tell us how to reach you.' : 'Write, and we will ring you back.'}
             lede={site.formEndpoint

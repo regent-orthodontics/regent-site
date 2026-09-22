@@ -5,7 +5,9 @@
 //
 // Lo que no se negocia: el titular y los dos botones se leen desde el primer
 // píxel, sin esperar a que cargue ni un fotograma.
+import { site } from '../../site.config.mjs';
 const N = 110;
+const a = site.contact.address;
 ---
 <section class="stage" id="stage">
   <div class="sticky">
@@ -13,7 +15,7 @@ const N = 110;
     <div class="veil"></div>
 
     <div class="wrap copy">
-      <p class="eyebrow">11 Regent Street · Newtownards</p>
+      <p class="eyebrow">{a.street} · {a.locality}</p>
       <h1>Specialist Orthodontist,<br /><em>Technique and Experience.</em></h1>
 
       <div class="beats">
