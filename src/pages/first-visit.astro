@@ -1,0 +1,114 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import EndCta from '../components/EndCta.astro';
+import Map from '../components/Map.astro';
+import { site } from '../../site.config.mjs';
+const v = site.firstVisit;
+const c = site.services.find((s) => s.slug === 'consultation');
+---
+<Base title="Your first visit"
+      description="What happens at a first orthodontic consultation at Regent Orthodontics in Newtownards: the conversation, indicative prices and the next step. The consultation is free.">
+  <PageHead eyebrow="Your first visit" title="Nothing is fitted on the day." lede={v.lede} />
+
+  <section>
+    <div class="wrap">
+      <div class="facts">
+        <div>
+          <p class="fl">How long</p>
+          <p class="fv">{v.duration}
+            {v.durationConfirmed === false && <span class="prov">indicative</span>}</p>
+        </div>
+        <div>
+          <p class="fl">What it costs</p>
+          {/* El dato que trae a la gente a esta página es el precio de la
+              primera cita. Mandarla a /fees para averiguar que es gratis
+              desperdiciaba la respuesta. */}
+          <p class="fv">{c.free ? 'Nothing' : <a href="/fees">See fees →</a>}</p>
+        </div>
+        <div>
+          <p class="fl">Referral needed</p>
+          <p class="fv">No</p>
+        </div>
+      </div>
+      <p class="foot">{c.detail.priceNote}</p>
+    </div>
+  </section>
+
+  <hr class="rule" />
+
+  <section class="steps">
+    <div class="wrap">
+      <p class="eyebrow">How it goes</p>
+      {/* El número se saca de la lista: escrito a mano decía "Four parts"
+          cuando ya eran tres, y nadie lo nota hasta leerlo en la página. */}
+      <h2>{['Nothing','One part','Two parts','Three parts','Four parts','Five parts'][v.steps.length] ?? `${v.steps.length} parts`}, in this order.</h2>
+      <ol class="slist">
+        {v.steps.map((st, i) => (
+          <li>
+            <p class="n">{String(i + 1).padStart(2, '0')}</p>
+            <div>
+              <h3>{st.title}</h3>
+              <p>{st.body}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="bring">
+    <div class="wrap">
+      <div class="two">
+        <div class="panel">
+          <h2>What to bring</h2>
+          <ul class="ticks">{v.bring.map((b) => <li>{b}</li>)}</ul>
+        </div>
+        <div class="panel afterwards">
+          <h2>Afterwards</h2>
+          <p>{v.after}</p>
+          <p class="sec">We are open {site.hours[0].days.replace('-', ' to ')},
+            {' '}{site.hours[0].open} to {site.hours[0].close}.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="where">
+    <div class="wrap">
+      <p class="eyebrow">Finding us</p>
+      <h2>{site.contact.address.street}, {site.contact.address.locality}</h2>
+      <Map height={440} />
+    </div>
+  </section>
+
+  <EndCta heading="Book the first visit." />
+</Base>
+
+<style>
+  .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:26px;
+         border-top:1px solid var(--line);padding-top:34px}
+  .fl{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+      color:var(--gold-text);margin:0 0 8px}
+  .fv{font-family:var(--serif);font-size:34px;line-height:1.05;margin:0}
+  .fv a{text-decoration:none;color:var(--gold-dim);font-size:26px}
+  .fv a:hover{color:var(--gold-text)}
+  .foot{margin-top:30px;color:var(--soft);font-size:14.5px;max-width:62ch}
+
+  .steps h2{font-size:clamp(26px,3.4vw,38px);margin:14px 0 0}
+  .slist{list-style:none;margin:52px 0 0;padding:0;border-top:1px solid var(--line)}
+  .slist li{display:grid;grid-template-columns:60px 1fr;gap:26px;padding:30px 0;
+            border-bottom:1px solid var(--line)}
+  .slist .n{font-family:var(--mono);font-size:11px;color:var(--gold-text);letter-spacing:.1em;margin:6px 0 0}
+  .slist h3{font-size:21px;margin:0 0 10px}
+  .slist p{color:var(--soft);font-size:15.5px;max-width:64ch;margin:0}
+
+  .bring{padding-top:0}
+  .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:22px}
+  .two h2{font-size:21px;margin:0 0 22px}
+  .afterwards p{color:var(--soft);font-size:15.5px;margin:0 0 16px}
+  .afterwards .sec{padding-top:18px;border-top:1px solid var(--line);font-size:14.5px;margin:0}
+  .where{padding-top:0}
+  .where h2{font-size:clamp(24px,3vw,34px);margin:14px 0 34px}
+  @media (max-width:760px){.slist li{grid-template-columns:38px 1fr;gap:16px}}
+</style>

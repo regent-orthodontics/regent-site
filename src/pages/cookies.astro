@@ -1,0 +1,103 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import { site } from '../../site.config.mjs';
+const p = site.privacy;
+// POL-54 §B5 pide que la tabla salga de un escaneo del sitio real y no de la
+// memoria de nadie: "A cookie policy that does not match what the site sets
+// is itself a compliance failure". El escaneo de este sitio devuelve cero
+// cookies, cero almacenamiento y cero peticiones a terceros, así que la tabla
+// no existe y lo que se publica es esa ausencia.
+---
+<Base title="Cookies"
+      description="Regent Orthodontics' cookie policy: this website sets no cookies, stores nothing on your device and loads nothing from third parties.">
+  <PageHead eyebrow="Cookies"
+            title="This site does not set any."
+            lede="Most cookie policies explain a banner. This one explains why there is not one." />
+
+  <section>
+    <div class="wrap prose narrow">
+      {p.confirmed === false && (
+        <p class="warnbar"><span>This page reproduces POL-54, the practice's cookie policy. It takes
+          effect when the practice opens to patients, which cannot happen until RQIA has granted
+          registration.</span></p>
+      )}
+
+      <div class="blk">
+        <h2>What we found when we checked</h2>
+        <p>UK cookie law changed on 5 February 2026, when the Data (Use and Access) Act 2025
+          replaced the old "strictly necessary" exception with a wider set of exceptions. Under the
+          new rules a site that carries no advertising and no third-party tracking may need no
+          consent banner at all. This is one of those sites.</p>
+        <ul class="ticks">
+          <li><span>No cookies of any kind, first-party or third-party</span></li>
+          <li><span>Nothing kept in local storage or session storage on your device</span></li>
+          <li><span>No analytics, no advertising, no pixels, no tags and no fingerprinting</span></li>
+          <li><span>No embedded maps, videos, chat widgets or social media feeds — the map on our
+            pages is a plain image generated here, not a service loaded from somewhere else</span></li>
+          <li><span>No requests to any other website when you load a page. The typefaces are
+            served from this site rather than from a font service, so visiting does not tell
+            anyone else you were here</span></li>
+        </ul>
+
+        {/* La lista decía "no requests to any other website at all", y ese "at all" era
+             absoluto: dejaba de ser cierto en cuanto alguien pulsa Send. Acotarlo a la carga
+             de página lo vuelve exacto, pero callar la excepción en una página que presume de
+             no hacer teatro desentonaba. Se declara. */}
+        <p class="exception">The one exception is the enquiry form. When you press Send — and
+          only then — what you have typed is sent to the service that passes it to us. Nothing
+          is stored on your device either way.</p>
+        <p>Because nothing is set, there is nothing to consent to and nothing to refuse. That is
+          also why there is no cookie banner: a banner asking permission for something that does
+          not exist would be theatre.</p>
+      </div>
+
+      <div class="blk">
+        <h2>The cookie table</h2>
+        <p>POL-54 requires this page to carry a table of every cookie the site sets, built from an
+          actual scan rather than from memory. The scan returns nothing, so the table is empty.</p>
+        <p class="tablenote">No cookies or similar technologies are set by this website.</p>
+      </div>
+
+      <div class="blk">
+        <h2>If that changes</h2>
+        <p>Adding an online booking tool, an embedded map, a video, a chat widget or a social media
+          feed can each bring storage and consent obligations with it. We check what a new service
+          sets before we add it, not afterwards. If we ever add something that needs your consent,
+          we will ask before it is set, refusing will be exactly as easy as accepting, and this page
+          and its table will be updated at the same time — not later.</p>
+        <p>The site is scanned before launch and at least annually after it.</p>
+      </div>
+
+      <div class="blk">
+        <h2>Your browser</h2>
+        <p>You can block or delete cookies in your browser settings whatever any website says. On
+          this site there is nothing for those settings to act on.</p>
+      </div>
+
+      <div class="blk">
+        <h2>Questions and complaints</h2>
+        <p>Ask us about anything on this page, or tell us if you think it is wrong:
+          {' '}<a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>. How we handle
+          information about you is set out in our <a href="/privacy">privacy notice</a>, and a
+          complaint about this page is handled under our
+          {' '}<a href="/complaints">complaints procedure</a>.</p>
+        <p>You can also complain to the <a href={p.ico.url} rel="noopener">{p.ico.name}</a> at any
+          time. Our ICO registration number is {p.ico.registration}.</p>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .narrow{max-width:72ch}
+  .blk{padding:34px 0;border-top:1px solid var(--line)}
+  .blk:first-of-type{border-top:0;padding-top:0}
+  .prose a{color:var(--gold-dim)}
+  .warnbar{margin-bottom:30px}
+  /* La tabla vacía se publica como una afirmación, no como un hueco: un
+     espacio en blanco donde se espera una tabla se lee como un descuido. */
+  .tablenote{border:1px solid var(--line);border-radius:12px;background:var(--paper);
+             padding:22px 24px;font-family:var(--mono);font-size:13.5px;color:var(--ink-soft);
+             max-width:none;margin-top:20px}
+</style>

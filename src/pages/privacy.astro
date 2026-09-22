@@ -1,158 +1,97 @@
 ---
-import { SITE } from '../config';
-const title = `Privacy notice — ${SITE.name}`;
-const updated = '29 June 2026';
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import { site } from '../../site.config.mjs';
+const p = site.privacy;
+const a = site.contact.address;
 ---
-<!doctype html>
-<html lang="en-GB">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{title}</title>
-  <meta name="description" content="How Regent Orthodontics processes personal data of waitlist registrants and website visitors." />
-  <link rel="canonical" href={`${SITE.url}/privacy`} />
-  <meta name="robots" content="noindex, follow" />
+<Base title="Website privacy notice"
+      description="What Regent Orthodontics does with your information when you enquire through this website, telephone the practice or simply visit: what we collect, why, how long we keep it and your rights.">
+  <PageHead eyebrow="Privacy"
+            title="What happens to your information."
+            lede="This page is about the website — what we collect when you enquire, telephone us or simply visit, why we are allowed to, and what you can ask us to do about it." />
 
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <section>
+    <div class="wrap prose narrow">
+      {p.confirmed === false && (
+        <p class="warnbar"><span>{p.draftNote}</span></p>
+      )}
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..600,0..100&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
-</head>
-<body>
-  <a href="/" class="back">← Back</a>
+      {/* El paciente que busca qué pasa con su historia clínica llega aquí.
+           Decirle en la primera línea que ese documento existe y dónde se lo
+           dan es más útil que dejarle leer una página que no es la suya. */}
+      <p class="hand">{p.patientNotice}</p>
 
-  <main class="prose">
-    <p class="kicker">Privacy notice</p>
-    <h1>How we look after your data.</h1>
-    <p class="meta">Last updated · {updated}</p>
+      <div class="blk">
+        <h2>Who is responsible</h2>
+        <p>{p.controller}, {a.street}, {a.locality}, {a.postcode}. Registered in Northern Ireland
+          no. {site.legal.companyNumber}. We are the data controller for the information described
+          here and are registered with the {p.ico.name} under registration number
+          {' '}<strong>{p.ico.registration}</strong>.</p>
+        <p>This notice applies to {p.scope}. Write to
+          {' '}<a href={`mailto:${site.contact.email}`}>{site.contact.email}</a> about anything on
+          this page.</p>
+      </div>
 
-    <h2>Who we are</h2>
-    <p>This website is operated by <strong>{SITE.legalName}</strong> ({SITE.companyNumber}), trading as <strong>Regent Orthodontics</strong>, registered in Northern Ireland. Our registered place of business is <strong>{SITE.address.line1}, {SITE.address.city}, {SITE.address.region}, {SITE.address.postcode}, {SITE.address.country}</strong>. For all data-protection matters, contact <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.</p>
+      <div class="blk">
+        <h2>What we collect, and why</h2>
+        {p.collect.map((c) => (
+          <div class="case">
+            <h3>{c.heading}</h3>
+            <p>{c.text}</p>
+            {c.basis && <p class="basis">{c.basis}</p>}
+          </div>
+        ))}
+        <p class="em">{p.noSell}</p>
+      </div>
 
-    <h2>What we collect on this site</h2>
-    <p>If you complete the <a href="/register">waitlist registration form</a>, we collect: your first name, last name, email address, optional mobile number, treatment route preference (NHS or private), age group, any free-text notes you choose to share, and the timestamp of your submission. We also record the source of the submission (e.g. "website") and your browser's user-agent string for diagnostic purposes only. We do not run analytics or set tracking cookies on this site.</p>
+      <div class="blk">
+        <h2>Who else sees it</h2>
+        <ul class="ticks">{p.sharing.map((i) => <li><span>{i}</span></li>)}</ul>
+        <p>{p.sharingNote}</p>
+      </div>
 
-    <h2>Why we hold it</h2>
-    <p>We hold this information for one purpose: to contact you about availability of an initial consultation at Regent Orthodontics once we open. Our lawful basis is <strong>your explicit consent</strong>, given when you tick the consent box on the form. You can withdraw consent at any time by emailing <a href={`mailto:${SITE.email}?subject=Unsubscribe%20from%20waitlist`}>{SITE.email}</a> or by replying <em>unsubscribe</em> to any communication from us — we will erase your record promptly.</p>
+      <div class="blk">
+        <h2>How long we keep it</h2>
+        <ul class="ticks">{p.retention.map((i) => <li><span>{i}</span></li>)}</ul>
+      </div>
 
-    <h2>Where it lives</h2>
-    <p>Submissions are stored in a private Google Workspace spreadsheet owned by {SITE.legalName} and accessible only to the directors of the company. We do not pass this list to third parties. We do not use it for marketing of unrelated products. We do not enrol you in any newsletter without further consent.</p>
+      <div class="blk">
+        <h2>Cookies</h2>
+        <p>{p.cookies}</p>
+      </div>
 
-    <h2>How long we keep it</h2>
-    <p>We retain waitlist entries until <strong>twelve months after the clinic opens</strong> ({SITE.openingMonth} 2026). After that period, any record where the registrant has not become a patient of the clinic is erased. Patients who proceed to clinical care become subject to the separate clinical-records retention policy of the practice (mandatory minimum retention for NHS and private dental records under the Northern Ireland Dental Practice regulations).</p>
+      <div class="blk">
+        <h2>Your rights</h2>
+        <p>You have the right to:</p>
+        <ul class="ticks">{p.rights.map((i) => <li><span>{i}</span></li>)}</ul>
+        <p>{p.rightsNote}</p>
+        <p>{p.complaintProcess}</p>
+        <p>{p.ico.note} The {p.ico.name} is at
+          {' '}<a href={p.ico.url} rel="noopener">{p.ico.url.replace(/^https?:\/\//, '')}</a>,
+          {' '}{p.ico.phone}.</p>
+      </div>
 
-    <h2>Your rights</h2>
-    <p>Under UK GDPR and the Data Protection Act 2018 you have the right to: access the data we hold about you; request correction of inaccurate data; request erasure of your data; restrict or object to our processing; withdraw consent at any time; and lodge a complaint with the UK Information Commissioner's Office (<a href="https://ico.org.uk" target="_blank" rel="noopener">ico.org.uk</a>). To exercise any of these rights, email <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.</p>
+      <div class="blk">
+        <h2>Changes to this notice</h2>
+        <p>{p.changes}</p>
+      </div>
+    </div>
+  </section>
+</Base>
 
-    <h2>Cookies and tracking</h2>
-    <p>This pre-launch site does not set any cookies and does not run third-party analytics or tracking pixels. Google Fonts are served from <code>fonts.googleapis.com</code> and <code>fonts.gstatic.com</code> — Google's font-serving policy applies to that single connection (no cookies set). When the full clinic site goes live, this notice will be updated to reflect any analytics added then.</p>
-
-    <h2>Changes to this notice</h2>
-    <p>If we change this notice we will update the date at the top. Material changes affecting active waitlist registrants will be notified by email.</p>
-
-    <p class="legal-foot">
-      © {new Date().getFullYear()} {SITE.legalName} ({SITE.companyNumber}) · Registered in Northern Ireland<br/>
-      Specialist Orthodontist · Dr Diego Chavesta Rivadeneyra · GDC&nbsp;{SITE.gdc.diego}<br/>
-      Orthodontic Therapist · Yesica Alves Barreto · GDC&nbsp;{SITE.gdc.yesica}
-    </p>
-  </main>
-
-  <style is:global>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #1a1816;
-      color: #cbc3b8;
-      -webkit-font-smoothing: antialiased;
-      min-height: 100vh;
-    }
-    ::selection { background: #b8956a; color: #1a1816; }
-    *:focus { outline: none; }
-    *:focus-visible { outline: 1.5px solid #d4b88a; outline-offset: 4px; border-radius: 2px; }
-  </style>
-
-  <style>
-    .back {
-      position: absolute;
-      top: 28px;
-      left: clamp(20px, 4vw, 40px);
-      color: #8a847b;
-      font-size: 12px;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      text-decoration: none;
-      transition: color 0.25s ease;
-    }
-    .back:hover { color: #d4b88a; }
-
-    .prose {
-      max-width: 640px;
-      margin: 0 auto;
-      padding: clamp(64px, 12vh, 120px) clamp(22px, 4vw, 32px) clamp(48px, 8vh, 96px);
-      font-size: 15px;
-      line-height: 1.7;
-    }
-    .kicker {
-      font-size: 11px;
-      letter-spacing: 0.28em;
-      text-transform: uppercase;
-      color: #d4b88a;
-      font-weight: 500;
-      margin-bottom: 18px;
-    }
-    .prose h1 {
-      font-family: 'Fraunces', Georgia, serif;
-      font-weight: 380;
-      font-size: clamp(30px, 4.4vw, 44px);
-      line-height: 1.1;
-      letter-spacing: -0.018em;
-      color: #f0ebe0;
-      font-variation-settings: 'opsz' 144, 'SOFT' 30;
-      margin-bottom: 14px;
-    }
-    .meta {
-      color: #8a847b;
-      font-size: 12px;
-      letter-spacing: 0.05em;
-      margin-bottom: 48px;
-    }
-    .prose h2 {
-      font-family: 'Fraunces', Georgia, serif;
-      font-weight: 400;
-      font-size: 20px;
-      color: #f0ebe0;
-      margin: 36px 0 12px;
-      font-variation-settings: 'opsz' 144, 'SOFT' 25;
-    }
-    .prose p {
-      margin-bottom: 14px;
-    }
-    .prose strong { color: #f0ebe0; font-weight: 500; }
-    .prose em { color: #d4b88a; font-style: italic; }
-    .prose code {
-      background: #221e1a;
-      color: #d4b88a;
-      padding: 2px 6px;
-      border-radius: 3px;
-      font-size: 13px;
-      font-family: ui-monospace, 'SF Mono', monospace;
-    }
-    .prose a {
-      color: #d4b88a;
-      border-bottom: 1px solid rgba(212, 184, 138, 0.25);
-      transition: border-color 0.25s ease;
-    }
-    .prose a:hover { border-color: #d4b88a; }
-    .legal-foot {
-      margin-top: 48px;
-      padding-top: 24px;
-      border-top: 1px solid rgba(212, 184, 138, 0.14);
-      font-size: 11.5px;
-      line-height: 1.7;
-      color: #8a847b;
-      letter-spacing: 0.02em;
-    }
-  </style>
-</body>
-</html>
+<style>
+  .narrow{max-width:72ch}
+  .blk{padding:34px 0;border-top:1px solid var(--line)}
+  .prose a{color:var(--gold-dim)}
+  .prose .em{color:var(--ink);font-weight:500;margin-top:22px}
+  .warnbar{margin-bottom:30px}
+  /* El puntero al aviso de paciente va antes que nada y no parece una nota
+     al pie: quien viene buscando su historia clínica tiene que verlo. */
+  .hand{border-left:2px solid var(--gold);padding:2px 0 2px 20px;color:var(--ink-soft);
+        font-size:16px;max-width:66ch;margin-bottom:8px}
+  .case{padding:22px 0;border-bottom:1px solid var(--line)}
+  .case:last-of-type{border-bottom:0;padding-bottom:0}
+  .case h3{font-size:17.5px;font-family:var(--sans);font-weight:600;margin:0 0 10px}
+  .basis{font-size:14.5px;padding-left:18px;border-left:1px solid var(--line);margin-top:12px}
+</style>

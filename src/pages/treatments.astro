@@ -1,0 +1,55 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import EndCta from '../components/EndCta.astro';
+import { site } from '../../site.config.mjs';
+const svc = site.services.filter((s) => s.slug);
+---
+<Base title="Treatments"
+      description="Fixed metal braces, ceramic braces, clear aligners and retainers at Regent Orthodontics, Newtownards — what each involves, how long it takes and what it costs.">
+  <PageHead eyebrow="Treatments"
+            title="Treatment matched to your teeth."
+            lede="No two mouths need the same appliance. Which one suits you depends on how your teeth meet, how far they have to move and what fits your life — and that is what the consultation settles, in writing, before anything begins." />
+
+  <section>
+    <div class="wrap">
+      <div class="list">
+        {svc.map((s, i) => (
+          <a class="row" href={`/treatments/${s.slug}`}>
+            <p class="idx">{String(i + 1).padStart(2, '0')}</p>
+            <div class="body">
+              <h2>{s.name}</h2>
+              <p class="desc">{s.description}</p>
+            </div>
+            <p class="more">Read more <span>→</span></p>
+          </a>
+        ))}
+      </div>
+
+      <p class="note">Every price is published in full on the <a href="/fees">fees page</a> —
+        what each treatment costs, what the fee covers and the charges that come up afterwards.</p>
+    </div>
+  </section>
+
+  <EndCta />
+</Base>
+
+<style>
+  .list{display:flex;flex-direction:column;border-top:1px solid var(--line)}
+  .row{display:grid;grid-template-columns:56px 1fr auto;gap:26px;align-items:center;
+       padding:34px 0;border-bottom:1px solid var(--line);text-decoration:none}
+  .row:hover .body h2{color:var(--gold-dim)}
+  .idx{font-family:var(--mono);font-size:11px;color:var(--gold-text);letter-spacing:.1em;margin:0}
+  .body h2{font-size:clamp(22px,2.8vw,30px);margin:0 0 10px}
+  .desc{color:var(--soft);font-size:15.5px;max-width:62ch;margin:0}
+  .more{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+        color:var(--gold-text);margin:0;white-space:nowrap}
+  .more span{display:inline-block;transition:transform .2s ease}
+  .row:hover .more span{transform:translateX(4px)}
+  .note{margin-top:34px;font-size:14.5px;color:var(--soft);max-width:64ch}
+  .note a{color:var(--gold-dim)}
+  @media (max-width:760px){
+    .row{grid-template-columns:38px 1fr;gap:16px;align-items:start}
+    .more{grid-column:2;margin-top:14px}
+  }
+</style>

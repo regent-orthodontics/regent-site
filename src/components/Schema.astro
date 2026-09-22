@@ -1,0 +1,48 @@
+---
+import { site } from '../../site.config.mjs';
+const a = site.contact.address;
+// Solo la página de tarifas declara precios: es la única que los enseña.
+const conPrecios = Astro.url.pathname.replace(/\.html$/, '').replace(/\/$/, '') === '/fees';
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': site.compliance.regulated ? 'MedicalBusiness' : 'LocalBusiness',
+  name: site.name,
+  description: site.tagline,
+  url: site.url,
+  email: site.contact.email,
+  ...(site.contact.phone && { telephone: site.contact.phone }),
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: a.street,
+    addressLocality: a.locality,
+    addressRegion: a.region,
+    postalCode: a.postcode,
+    addressCountry: a.country,
+  },
+  ...(a.lat && a.lon && {
+    geo: { '@type': 'GeoCoordinates', latitude: a.lat, longitude: a.lon },
+    hasMap: `https://www.openstreetmap.org/?mlat=${a.lat}&mlon=${a.lon}#map=17/${a.lat}/${a.lon}`,
+  }),
+  openingHoursSpecification: site.hours.map((h) => ({
+    '@type': 'OpeningHoursSpecification',
+    dayOfWeek: h.days,
+    opens: h.open,
+    closes: h.close,
+  })),
+  // Los precios en el schema son lo que un asistente puede citar.
+  ...(conPrecios && site.services.length > 0 && {
+    hasOfferCatalog: {
+      '@type': 'OfferCatalog',
+      name: 'Services',
+      itemListElement: site.services.map((s) => ({
+        '@type': 'Offer',
+        itemOffered: { '@type': 'Service', name: s.name, description: s.description },
+        price: s.price,
+        priceCurrency: site.currency,
+      })),
+    },
+  }),
+};
+---
+<script type="application/ld+json" set:html={JSON.stringify(schema)} />

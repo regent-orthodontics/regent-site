@@ -1,0 +1,140 @@
+---
+// El hero: el bracket gira mientras se baja, y la escena pasa del negro al
+// crema de la clínica. 110 fotogramas de un giro completo, dibujados según
+// el scroll — la técnica de las páginas de producto de Apple.
+//
+// Lo que no se negocia: el titular y los dos botones se leen desde el primer
+// píxel, sin esperar a que cargue ni un fotograma.
+const N = 110;
+---
+<section class="stage" id="stage">
+  <div class="sticky">
+    <img id="frame" src="/bracket/f000.jpg" alt="" aria-hidden="true" fetchpriority="high" />
+    <div class="veil"></div>
+
+    <div class="wrap copy">
+      <p class="eyebrow">11 Regent Street · Newtownards</p>
+      <h1>Specialist Orthodontist,<br /><em>Technique and Experience.</em></h1>
+
+      <div class="beats">
+        <p class="beat">Braces and aligners for children, teenagers and adults — planned by a
+          specialist orthodontist, in the centre of Newtownards.</p>
+      </div>
+
+      <div class="acts">
+        <a class="btn" href="/fees">See treatments &amp; fees</a>
+        <a class="btn ghost light" href="/referrals">I'm a dentist referring</a>
+      </div>
+    </div>
+
+    <p class="hint" aria-hidden="true">scroll</p>
+  </div>
+</section>
+
+<style define:vars={{ n: N }}>
+  /* 430vh daban recorrido a tres frases turnándose. Con una sola, lo único
+     que pide recorrido es el giro del bracket: 360vh son 2,6 pantallas de
+     scroll en lugar de 3,3. Los 110 fotogramas se reparten sobre menos
+     píxeles, así que el giro va algo más rápido; van precargados. */
+  .stage{height:360vh;position:relative;background:var(--bg,var(--black));
+         transition:background-color .1s linear}
+  .sticky{position:sticky;top:0;height:100vh;overflow:hidden;display:grid;align-items:center}
+  /* El bracket se aparta de la columna de texto. El hueco que deja por la
+     izquierda no se ve: el borde de la fotografía va difuminado con una
+     máscara, así que se funde con el fondo en lugar de cortarse contra él
+     —y ese fondo va del negro al crema conforme se baja. */
+  #frame{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;
+         transform:translateX(var(--shift,14%));
+         -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 13%);
+         mask-image:linear-gradient(90deg,transparent 0,#000 13%)}
+  /* El texto vive sobre metal brillante: sin este velo no se lee. */
+  .veil{position:absolute;inset:0;pointer-events:none;
+        background:linear-gradient(100deg,var(--v1,rgba(11,11,10,.94)) 0%,
+                   var(--v2,rgba(11,11,10,.6)) 46%,transparent 74%)}
+  .copy{position:relative;z-index:2;padding-right:36%}
+  /* 15ch y 72px eran para un titular de dos palabras por línea. Este mide
+     25 caracteres por mitad, así que la caja se ensancha y el cuerpo baja:
+     con los valores anteriores caía en cuatro líneas. */
+  .copy h1{font-size:clamp(23px,3.9vw,52px);margin:20px 0 0;max-width:26ch;
+           color:var(--fg,#fff);transition:color .1s linear}
+  /* Aquí el fondo va del negro al crema, así que ningún dorado fijo sirve:
+     el claro se pierde sobre el crema (2,34:1) y el oscuro sobre el negro.
+     El tick del scroll publica --gold-on y el dorado vira con la escena. */
+  .copy h1 em{font-style:normal;color:var(--gold-on,var(--gold))}
+  .copy .eyebrow{color:var(--gold-on,var(--gold))}
+  /* Una sola frase. Aquí hubo tres que se turnaban con el scroll, apiladas
+     en la misma celda del grid; al quedar una sola no hay nada que apilar ni
+     que fundir. Se conserva el ancho de medida, que es lo que hacía legible
+     el bloque sobre la fotografía. */
+  .beats{margin:26px 0 0;max-width:44ch}
+  /* pretty evita que la última línea se quede con una palabra suelta. */
+  .beat{font-size:17.5px;line-height:1.66;text-wrap:pretty;
+        color:var(--fg2,rgba(255,255,255,.74));transition:color .1s linear}
+  .acts{display:flex;gap:11px;flex-wrap:wrap;margin-top:54px}
+  .btn.light{color:var(--fg,#fff);border-color:var(--edge,rgba(255,255,255,.3))}
+  .hint{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);z-index:3;
+        font-family:var(--mono);font-size:10px;letter-spacing:.24em;text-transform:uppercase;
+        color:var(--fg2,rgba(255,255,255,.42));animation:bob 2.6s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,6px)}}
+  @media (max-width:820px){
+    .stage{height:280vh}
+    .copy{padding-right:0}
+    #frame{--shift:0%;mask-image:none;-webkit-mask-image:none}
+    .veil{background:linear-gradient(180deg,rgba(11,11,10,.5) 0%,rgba(11,11,10,.92) 62%)}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .stage{height:100vh} .hint{display:none}
+  }
+</style>
+
+<script>
+  const N = 110;
+  const stage = document.getElementById('stage');
+  const img = document.getElementById('frame');
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Se precargan todos: sin esto el primer recorrido va a saltos mientras
+  // cada fotograma se descarga y decodifica sobre la marcha.
+  const srcs = Array.from({ length: N }, (_, i) => `/bracket/f${String(i).padStart(3, '0')}.jpg`);
+  if (!still) srcs.forEach((s) => { const im = new Image(); im.src = s; });
+
+  const mix = (a, b, t) => a.map((v, i) => Math.round(v + (b[i] - v) * t));
+  const rgb = (c) => `rgb(${c[0]},${c[1]},${c[2]})`;
+  const BLACK = [11, 11, 10], CREAM = [245, 240, 232];   // #F5F0E8, el de la clínica
+  const WHITE = [255, 255, 255], INK = [26, 24, 22];     // #1A1816
+  // #B8956A contrasta sobre el negro y #7E6649 sobre el crema. Ninguno vale
+  // para los dos extremos, así que el dorado recorre el mismo camino.
+  const GOLD_ON_BLACK = [184, 149, 106], GOLD_ON_CREAM = [126, 102, 73];
+  const root = document.documentElement;
+
+  let raf = 0;
+  function tick() {
+    raf = 0;
+    const total = stage.offsetHeight - innerHeight;
+    const p = total > 0 ? Math.min(1, Math.max(0, -stage.getBoundingClientRect().top / total)) : 0;
+
+    img.src = srcs[Math.min(N - 1, Math.round(p * (N - 1)))];
+
+    // El fondo no se calienta hasta pasada la mitad —el bracket necesita el
+    // negro para leerse como metal— y termina de hacerlo ANTES del final del
+    // bloque: el último tramo ya está en el crema exacto de la clínica, así
+    // que al salir del hero no hay costura con la sección siguiente.
+    const warm = Math.min(1, Math.max(0, (p - 0.42) / 0.4));
+    const bg = mix(BLACK, CREAM, warm);
+    root.style.setProperty('--bg', rgb(bg));
+    root.style.setProperty('--fg', rgb(mix(WHITE, INK, warm)));
+    root.style.setProperty('--fg2', rgb(mix(WHITE, [111, 106, 99], warm)));
+    root.style.setProperty('--gold-on', rgb(mix(GOLD_ON_BLACK, GOLD_ON_CREAM, warm)));
+    root.style.setProperty('--v1', `rgba(${bg.join(',')},.94)`);
+    root.style.setProperty('--v2', `rgba(${bg.join(',')},.6)`);
+    root.style.setProperty('--edge', warm > .5 ? 'rgba(212,184,138,.5)' : 'rgba(255,255,255,.3)');
+    // La barra queda fija encima del hero: si mantuviera su crema cortaría el
+    // negro en dos. Publicando aquí el color de cada fotograma, se funde con
+    // él y acompaña la misma transición hacia los tonos cálidos.
+    document.documentElement.style.setProperty('--hero-bg', rgb(bg));
+    document.documentElement.style.setProperty('--hero-fg', rgb(mix(WHITE, INK, warm)));
+
+  }
+  if (!still) addEventListener('scroll', () => { if (!raf) raf = requestAnimationFrame(tick); }, { passive: true });
+  tick();
+</script>

@@ -1,0 +1,236 @@
+---
+const { hero, name } = Astro.props;
+const [b1, b2, b3] = hero.beats;
+// Dos composiciones. 'stack' pone el titular arriba y el producto debajo;
+// 'side' aprovecha una fotografía que ya deja hueco a un lado y mete el
+// texto ahí, alineado a la izquierda de su columna.
+const side = hero.layout === 'side';
+// Punto de anclaje del encuadre. Con object-fit:cover sobra imagen por los
+// lados y este valor decide qué parte se conserva; '0% 50%' pega la foto al
+// borde izquierdo, que es lo que necesita una composición lateral.
+const focus = hero.focus ?? '38% 50%';
+---
+<section class:list={['stage', side && 'side']} data-hero
+         data-keep-dark={hero.dark ? 'true' : 'false'}>
+  <div class="sticky">
+    <div class="shot">
+      {side && hero.imageStacked ? (
+        <picture>
+          <source media="(max-width:1339px)" srcset={hero.imageStacked} />
+          <img src={hero.image} alt={hero.alt} fetchpriority="high" decoding="async"
+               style={`object-position:${focus}`} />
+        </picture>
+      ) : (
+        <img src={hero.image} alt={hero.alt} fetchpriority="high" decoding="async"
+             style={side ? `object-position:${focus}` : undefined} />
+      )}
+    </div>
+
+    <div class="copy">
+      <p class="beat b1"><span>{b1}</span></p>
+      <p class="beat b2"><span>{b2}</span></p>
+      <p class="beat b3"><span>{b3}</span></p>
+    </div>
+
+    <p class="hint" aria-hidden="true">Scroll</p>
+    <h1 class="sr">{name}</h1>
+  </div>
+</section>
+
+<script>
+  // Mismo motor que el hero de la portada: una sola variable de progreso
+  // gobierna imagen, texto y color de fondo. Sin librerías y sin listeners
+  // de scroll caros — todo va dentro de un requestAnimationFrame.
+  const stage = document.querySelector('[data-hero]');
+  if (stage) {
+    const sticky = stage.querySelector('.sticky');
+    const img = stage.querySelector('.shot img');
+    const beats = [...stage.querySelectorAll('.beat')];
+    const hint = stage.querySelector('.hint');
+
+    const mix = (a, b, t) => a.map((v, i) => Math.round(v + (b[i] - v) * t));
+    const rgb = (c) => `rgb(${c[0]},${c[1]},${c[2]})`;
+    const BLACK = [0, 0, 0], CREAM = [245, 240, 232];
+    const WHITE = [255, 255, 255], INK = [26, 24, 22];
+    const clamp = (n) => Math.min(1, Math.max(0, n));
+
+    const keepDark = stage.dataset.keepDark === 'true';
+    const side = stage.classList.contains('side');
+    let ticking = false;
+    function paint() {
+      ticking = false;
+      const r = stage.getBoundingClientRect();
+      const span = stage.offsetHeight - window.innerHeight;
+      const p = clamp(-r.top / span);
+
+      // La imagen respira: entra grande y cede sitio al texto.
+      // En la disposición apilada la fotografía ya llena justo su hueco:
+      // cualquier escalado la saca de la pantalla por abajo. El gesto de
+      // acercamiento se reserva para la composición lateral, que tiene
+      // sitio de sobra alrededor.
+      const compacto = side && matchMedia('(max-width:1339px)').matches;
+      img.style.transform = compacto ? 'none' : `scale(${1.02 - p * 0.10})`;
+      // Si la página sigue en negro, el bracket se queda: retirarlo dejaría
+      // una pantalla vacía justo antes del texto, que es tiempo de scroll
+      // que el visitante paga sin recibir nada.
+      const fade = keepDark ? 0 : 0.96;
+      img.style.opacity = String(1 - clamp((p - 0.66) / 0.24) * fade);
+
+      // El negro se funde al crema de la clínica en el último tramo, para
+      // que la ficha no arranque con un corte.
+      // En una ficha que sigue en negro no hay nada a lo que fundir: el
+      // hero entrega el testigo al contenido sin cambiar de color.
+      const warm = keepDark ? 0 : clamp((p - 0.68) / 0.24);
+      sticky.style.setProperty('--bg', rgb(mix(BLACK, CREAM, warm)));
+      sticky.style.setProperty('--fg', rgb(mix(WHITE, INK, warm)));
+
+      // Tres frases que se relevan. Cada una entra, se sostiene y sale.
+      const win = keepDark ? [[0, 0.32], [0.32, 0.64], [0.64, 1.01]]
+                           : [[0, 0.30], [0.30, 0.60], [0.60, 0.92]];
+      beats.forEach((el, i) => {
+        const [a, b] = win[i];
+        const t = clamp((p - a) / (b - a));
+        // El primero ya está puesto cuando cargas la página: es el titular,
+        // no algo que haya que ir a buscar con el scroll.
+        const inn = i === 0 ? 1 : clamp(t / 0.22);
+        const out = (keepDark && i === 2) ? 0 : clamp((t - 0.78) / 0.22);
+        const on = p >= a - 0.02 && p <= b + 0.02;
+        el.style.opacity = String(on ? inn * (1 - out) : 0);
+        el.style.transform = `translateY(${(1 - inn) * 26 - out * 22}px)`;
+      });
+
+      hint.style.opacity = String(clamp(1 - p / 0.08));
+    }
+
+    const onScroll = () => { if (!ticking) { ticking = true; requestAnimationFrame(paint); } };
+    addEventListener('scroll', onScroll, { passive: true });
+    addEventListener('resize', onScroll);
+    paint();
+  }
+</script>
+
+<style>
+  .stage{height:300vh;position:relative;background:#000}
+  .sticky{position:sticky;top:0;height:100vh;overflow:hidden;
+          background:var(--bg,var(--black));color:var(--fg,#fff);
+          display:grid;place-items:center;transition:background-color .12s linear}
+
+  .shot{position:absolute;inset:var(--shot-top,30vh) 0 0;display:grid;place-items:start center}
+  /* A sangre. El negro de la foto y el del fondo nunca son exactamente el
+     mismo, así que la máscara funde los bordes en lugar de confiar en que
+     coincidan: sin ella se ve el rectángulo de la imagen recortado. */
+  /* Alto fijo y contenida: el bracket entra entero bajo el titular y no
+     hay recorte que lo suba a pisarlo. El fondo de la foto es negro puro,
+     igual que el de la página, así que no hace falta máscara ninguna: no
+     existe costura que disimular. */
+  .shot img{height:78vh;width:auto;max-width:92vw;object-fit:contain;display:block;
+            transform-origin:50% 22%;will-change:transform,opacity}
+
+  .copy{position:absolute;z-index:2;left:50%;translate:-50% 0;top:11vh;
+        width:min(1100px,88vw);text-align:center;pointer-events:none}
+
+  /* ── composición lateral ─────────────────────────────────────────
+     La fotografía va a sangre y el texto ocupa el negro que ella misma
+     deja libre. Alineado a la izquierda y con más cuerpo de letra que en
+     la otra: es una columna, no un rótulo centrado. */
+  .side .shot{inset:0}
+  .side .shot picture{display:block;width:100%;height:100%}
+  .side .shot img{height:100%;width:100%;object-fit:cover;max-width:none}
+  /* Ojo con `translate:none` aquí: el minificador borra las declaraciones
+     cuyo valor es el inicial, y se llevaba por delante la que anulaba el
+     `translate:-50%` de la regla base — el texto acababa 300px a la
+     izquierda, encima del aparato. `0 0` hace lo mismo y sobrevive.
+     El centrado vertical va por grid y no por transform: las frases están
+     en absoluto, así que .copy mide 0 de alto y un translateY(-50%) no
+     desplaza nada. */
+  /* El texto arranca en un PORCENTAJE del ancho, no a una distancia fija
+     del borde derecho. Con `right:0` y `width:672px` el bloque se alejaba
+     más cuanto más ancha fuera la pantalla: en un monitor de 2560px el
+     hueco con el aparato pasaba de 350px, aunque en uno de 1677 pareciera
+     correcto. La imagen es 16:9 y con object-fit:cover el aparato termina
+     siempre cerca del 56% del ancho, así que el 60% mantiene la misma
+     separación en cualquier monitor. */
+  .side .copy{left:64%;right:0;translate:0 0;top:0;bottom:0;
+              width:auto;padding-right:min(6vw,72px);text-align:left;
+              display:grid;align-content:center}
+  /* Y el texto no se estira en pantallas anchas: el bloque crece, la
+     medida de lectura no. */
+  .side .beat span{max-width:15ch}
+  .side .beat{position:relative;grid-area:1/1;top:auto;left:auto;right:auto}
+  .side .beat span{font-weight:400;letter-spacing:-.02em;line-height:1.12;
+                   text-shadow:0 2px 30px rgba(0,0,0,.9),0 1px 4px rgba(0,0,0,.7)}
+  .side .b1 span{font-size:clamp(38px,4.8vw,68px)}
+  .side .b2 span{font-size:clamp(27px,3vw,43px);max-width:none}
+  .side .b3 span{font-size:clamp(29px,3.4vw,50px)}
+  .side .hint{left:auto;right:min(6vw,72px);transform:translateX(0)}
+  .side .hint::after{margin:10px 0 0}
+  .beat{position:absolute;left:0;right:0;top:0;margin:0;
+        transform:translateY(0);will-change:transform,opacity;opacity:0}
+  .beat span{display:block;font-family:var(--serif);font-weight:300;letter-spacing:-.026em;
+             line-height:1.04;text-wrap:balance;
+             text-shadow:0 2px 30px rgba(0,0,0,.6)}
+  .b1 span{font-size:clamp(40px,7.4vw,104px)}
+  .b2 span{font-size:clamp(26px,3.8vw,52px);max-width:20ch;margin:0 auto}
+  .b3 span{font-size:clamp(30px,4.8vw,68px)}
+
+  /* El bracket es transparente: sin este velo el texto se pierde dentro
+     del propio cristal. Es un degradado, no una caja, para que no se lea
+     como un recuadro encima de la foto. */
+  /* Sin velo: el titular ya no se superpone a nada. */
+
+  .hint{position:absolute;bottom:34px;left:50%;transform:translateX(-50%);margin:0;
+        font-family:var(--mono);font-size:10px;letter-spacing:.28em;text-transform:uppercase;
+        opacity:.55}
+  .hint::after{content:"";display:block;width:1px;height:24px;margin:10px auto 0;
+               background:currentColor;opacity:.5}
+
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+  /* En vertical el titular ocupa dos o tres líneas y la barra de navegación
+     se desdobla: sin recortar la foto, el bracket se sale por debajo. */
+  @media (max-width:1339px){
+    /* Apilado: la franja bajo el titular es mucho más apaisada que la
+       fotografía, así que `cover` la recortaría por arriba y por abajo.
+       Aquí entra entera. */
+    /* Fuera el grid en esta disposición: su fila se dimensiona por el
+       contenido, de modo que el `height:100%` de la imagen se resolvía
+       contra la fila (996px) y no contra el contenedor (585px). */
+    .side .shot{inset:31vh 0 4vh;display:block}
+    /* La altura hay que fijarla aquí: dentro del grid del contenedor un
+       `height:100%` no resuelve y la acaba dictando el ancho, con lo que la
+       fotografía se salía casi 500px por debajo del pliegue. */
+    .side .shot img{height:100%!important;width:100%!important;
+                    object-fit:contain!important;object-position:50% 50%!important}
+
+    .side .copy{left:50%;right:auto;translate:-50% 0;top:11vh;bottom:auto;
+                width:min(1100px,88vw);padding-right:0;display:block;text-align:center}
+    .side .beat{position:absolute;top:0;left:0;right:0}
+    .side .b1 span{font-size:clamp(34px,6.4vw,76px)}
+    .side .b2 span{font-size:clamp(24px,3.4vw,44px);max-width:24ch;margin:0 auto}
+    .side .b3 span{font-size:clamp(26px,4.2vw,58px)}
+    .side .hint{left:50%;right:auto;transform:translateX(-50%)}
+  }
+
+  @media (max-width:760px){
+    .copy{top:13vh}
+    .shot{--shot-top:32vh}
+    .shot img{height:57vh;max-width:96vw}
+    /* Hereda `inset:31vh 0 4vh; display:block` de la regla de arriba: un
+       inset sin borde inferior dejaba la fotografía saliéndose de la
+       pantalla por abajo. Aquí solo se ajusta el reparto vertical. */
+    .side .shot{inset:30vh 0 12vh}
+    .side .copy{width:88vw}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    .stage{height:auto}
+    .sticky{position:static;height:auto;padding:80px 0;background:var(--black);color:#fff}
+    .shot{position:static;inset:auto;display:block}
+    .shot img{transform:none!important;opacity:1!important;margin:0 auto 48px;
+              height:auto;max-height:70vh;width:auto;max-width:92%}
+    .side .copy{position:static;width:auto;padding:0;translate:0 0;display:block}
+    .beat{position:static;opacity:1!important;transform:none!important;margin-bottom:28px}
+    .copy{position:static;translate:none;width:auto}
+    .hint{display:none}
+  }
+</style>

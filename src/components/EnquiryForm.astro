@@ -1,0 +1,244 @@
+---
+import { site } from '../../site.config.mjs';
+// El formulario solo aparece si hay un endpoint configurado. Hasta que el
+// Worker esté desplegado, la página de contacto sigue con el correo y no
+// enseña una caja que no va a ninguna parte.
+const endpoint = site.formEndpoint;
+// El acuse vive en /thanks. Aquí sólo queda el aviso de error, que se pinta
+// en el cliente: en un sitio estático el parámetro de la URL no existe al
+// compilar. Sin JavaScript el visitante vuelve al formulario en blanco, que
+// es peor que un mensaje pero mejor que un mensaje que no se corresponde con
+// lo que ha pasado; la validación nativa del navegador filtra antes casi
+// todo lo que podría fallar.
+---
+{endpoint && (
+  <form class="enq panel" id="enquiry" method="POST" action={endpoint}>
+    <p class="warnbar" role="alert" id="enq-error" hidden><span></span></p>
+
+    <div class="pair">
+      <p class="field">
+        <label for="f-first">First name</label>
+        <input id="f-first" name="first" type="text" required autocomplete="given-name"
+               maxlength="80" />
+      </p>
+      <p class="field">
+        <label for="f-last">Last name</label>
+        <input id="f-last" name="last" type="text" required autocomplete="family-name"
+               maxlength="80" />
+      </p>
+    </div>
+
+    <div class="pair">
+      <p class="field">
+        <label for="f-email">Email</label>
+        <input id="f-email" name="email" type="email" required autocomplete="email"
+               maxlength="160" />
+      </p>
+      <p class="field">
+        <label for="f-mobile">Mobile</label>
+        <input id="f-mobile" name="mobile" type="tel" required autocomplete="tel"
+               maxlength="40" />
+      </p>
+    </div>
+
+    <div class="pair">
+      <p class="field">
+        <label for="f-type">What are you looking for?</label>
+        <select id="f-type" name="patientType" required
+                aria-describedby="type-note">
+          <option value="">Choose one</option>
+          <option value="Private">Private treatment</option>
+          <option value="NHS" data-adults="no">Health Service treatment</option>
+          <option value="Not sure">Not sure yet</option>
+        </select>
+        {/* Dos cosas a la vez: el servicio público se redacta siempre como
+             intención, y el alcance previsto es sólo infantil y juvenil. Sin
+             la segunda, un adulto elige "Health Service" y descubre meses
+             después que nunca fue para él. Cinco de las siete personas que ya
+             están en la lista marcaron esta opción. */}
+        <span class="note" id="type-note" data-por-defecto="We intend to offer Health Service treatment for children and teenagers from opening. Adult treatment is private. Nothing is available yet, and we will tell you where things stand.">We intend to offer Health Service treatment for children
+          and teenagers from opening. Adult treatment is private. Nothing is available yet, and we
+          will tell you where things stand.</span>
+      </p>
+      <p class="field">
+        <label for="f-age">Who is the treatment for?</label>
+        <select id="f-age" name="ageGroup" required>
+          <option value="">Choose one</option>
+          <option value="Child">A child</option>
+          <option value="Teen">A teenager</option>
+          <option value="Adult">An adult</option>
+        </select>
+      </p>
+    </div>
+
+    <p class="field">
+      <label for="f-notes">Anything else? <span class="opt">Optional</span></label>
+      <textarea id="f-notes" name="notes" rows="3" maxlength="1000"
+                aria-describedby="notes-note"></textarea>
+      {/* El campo libre no es un canal seguro para datos clínicos. Decirlo
+           antes de que se escriba es lo único que lo evita. */}
+      <span class="note" id="notes-note">Please keep it general — when you would like to be seen,
+        or how to reach you. Do not put medical details here; we will take those properly at the
+        appointment.</span>
+    </p>
+
+    <p class="consent">
+      <input id="f-consent" type="checkbox" name="consent" value="yes" required />
+      <label for="f-consent">I agree to Regent Orthodontics holding these details in order to
+        contact me about an appointment. <a href="/privacy">How we handle your information</a>.</label>
+    </p>
+
+    {/* Trampa para robots: oculta, sin etiqueta y fuera del recorrido del
+         teclado, así que nadie que rellene el formulario la ve. */}
+    <div class="hp" aria-hidden="true">
+      <label for="f-website">Website</label>
+      <input id="f-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+    </div>
+    <input type="hidden" name="t" id="f-t" value="" />
+
+    <div class="acts">
+      <button class="btn" type="submit">Send</button>
+      <span class="alt">or email <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a></span>
+    </div>
+  </form>
+)}
+
+<script>
+  const MOTIVOS = {
+    adultnhs: 'Health Service treatment is for children and teenagers. Adult treatment here is private.',
+    ratelimit: 'You have sent several requests already. Please email the practice instead, or try again later.',
+    unavailable: 'Something went wrong at our end and your request was not saved. Please email the practice.',
+    badrequest: 'The form could not be read. Please try again.',
+  };
+  const form = document.getElementById('enquiry');
+  const aviso = document.getElementById('enq-error');
+
+  function mostrarError(codigo) {
+    if (!aviso) return;
+    const conocido = MOTIVOS[codigo];
+    const campos = !conocido && codigo ? codigo.split(',') : [];
+    aviso.querySelector('span').textContent = conocido
+      ?? 'Some details were missing or did not look right. They are marked below.';
+    aviso.hidden = false;
+    // Marcar los campos concretos que el servidor rechazó, y llevar el foco
+    // al primero: un aviso arriba sin señalar cuál falla obliga a repasar
+    // todo el formulario a mano.
+    for (const nombre of campos) {
+      const campo = form?.elements[nombre];
+      if (campo) campo.setAttribute('aria-invalid', 'true');
+    }
+    const primero = campos.map((n) => form?.elements[n]).find(Boolean);
+    (primero ?? aviso).scrollIntoView({ block: 'center' });
+    primero?.focus();
+  }
+
+  // Si el Worker redirigió por un fallo, el motivo viene en la URL. Esto se
+  // resuelve aquí y no al compilar porque el sitio es estático.
+  const params = new URLSearchParams(location.search);
+  if (params.get('error')) mostrarError(params.get('error'));
+
+  if (form) {
+    const t = document.getElementById('f-t');
+    if (t) t.value = String(Date.now());
+
+    // Adulto y servicio público no van juntos. La opción se desactiva en
+    // lugar de esconderse: alguien que viene buscándola tiene que VER que
+    // existe y por qué no le corresponde, o cree que no la ofrecemos a nadie.
+    const tipo = form.elements.patientType;
+    const edad = form.elements.ageGroup;
+    const nota = document.getElementById('type-note');
+    const porDefecto = nota?.dataset.porDefecto ?? '';
+    const opcionHS = tipo?.querySelector('option[data-adults="no"]');
+
+    function sincronizar() {
+      if (!tipo || !edad || !opcionHS) return;
+      const adulto = edad.value === 'Adult';
+      opcionHS.disabled = adulto;
+      if (adulto && tipo.value === 'NHS') tipo.value = '';
+      if (nota) {
+        nota.textContent = adulto
+          ? 'Adult treatment here is private. Health Service treatment is for children and teenagers, and is not available yet.'
+          : porDefecto;
+      }
+    }
+    edad?.addEventListener('change', sincronizar);
+    sincronizar();   // el navegador puede haber recordado una selección
+
+    form.addEventListener('submit', async (e) => {
+      if (!form.reportValidity()) return;
+      e.preventDefault();
+      const boton = form.querySelector('button[type=submit]');
+      boton.disabled = true;
+      boton.textContent = 'Sending…';
+      try {
+        const r = await fetch(form.action, {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { accept: 'application/json' },
+        });
+        const data = await r.json().catch(() => ({ ok: false, error: 'unavailable' }));
+        if (data.ok) { location.href = '/thanks'; return; }
+        boton.disabled = false;
+        boton.textContent = 'Send';
+        mostrarError(data.error || 'badrequest');
+      } catch {
+        // Si el fetch no sale —red caída, extensión que lo bloquea— se envía
+        // a la manera clásica y que redirija el Worker.
+        form.submit();
+      }
+    });
+  }
+</script>
+
+<style>
+  .done{padding:34px 32px}
+  .done h2{font-size:clamp(22px,2.8vw,28px);margin:0 0 12px}
+  .done p{color:var(--soft);font-size:15.5px;margin:0 0 12px;max-width:56ch}
+  .done .quiet{font-size:14.5px;margin:0}
+  .done a{color:var(--gold-dim)}
+
+  .enq{padding:34px 32px;display:flex;flex-direction:column;gap:20px;max-width:640px}
+  .enq .warnbar{margin:0}
+  /* .warnbar lleva display:flex en el estilo global y eso gana al display:none
+     que el navegador aplica a [hidden]: la caja de error salía vacía en cada
+     carga, con su punto y su borde, avisando de nada. */
+  .enq .warnbar[hidden]{display:none}
+  .pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:20px}
+  .field{display:flex;flex-direction:column;gap:7px;margin:0}
+  label{font-size:14.5px;font-weight:500;color:var(--ink)}
+  .opt{font-weight:400;color:var(--soft);font-size:13.5px}
+  /* --line es un separador decorativo y resuelto sobre el panel da 1,17:1
+     contra el interior del campo: los recuadros casi no se veían. El criterio
+     1.4.11 de las WCAG pide 3:1 para un control, y este borde ES el control.
+     Solo se cambia aquí; las reglas que separan secciones no son controles. */
+  input[type=text],input[type=email],input[type=tel],select,textarea{
+    font:inherit;font-size:16px;   /* por debajo de 16px iOS hace zoom al enfocar */
+    color:var(--ink);background:var(--cream);
+    border:1px solid #A1825D;border-radius:10px;padding:11px 13px;width:100%}
+  textarea{resize:vertical;min-height:84px}
+  select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--gold-text) 50%),
+         linear-gradient(135deg,var(--gold-text) 50%,transparent 50%);
+         background-position:calc(100% - 19px) 50%,calc(100% - 14px) 50%;
+         background-size:5px 5px,5px 5px;background-repeat:no-repeat;padding-right:38px}
+  input:focus-visible,select:focus-visible,textarea:focus-visible{
+    outline:2px solid var(--gold);outline-offset:2px;border-color:var(--gold)}
+  [aria-invalid=true]{border-color:#A0491F}
+  .note{font-size:13.5px;color:var(--soft);line-height:1.5}
+
+  .consent{display:flex;gap:11px;align-items:flex-start;margin:0}
+  .consent input{margin-top:3px;width:17px;height:17px;flex:none;accent-color:var(--gold-dim)}
+  .consent label{font-size:14.5px;font-weight:400;color:var(--soft);line-height:1.55}
+  .consent a{color:var(--gold-dim)}
+
+  /* Fuera de la pantalla en lugar de display:none — algunos robots saltan lo
+     que está oculto del todo, y este campo existe para que lo rellenen. */
+  .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+
+  .acts{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-top:4px}
+  .acts .btn{border:0;cursor:pointer;font-family:inherit}
+  .acts .btn[disabled]{opacity:.6;cursor:default}
+  .alt{font-size:14px;color:var(--soft)}
+  .alt a{color:var(--gold-dim)}
+
+  @media (max-width:620px){.enq,.done{padding:28px 24px}}
+</style>

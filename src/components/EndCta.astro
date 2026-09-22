@@ -1,0 +1,29 @@
+---
+import { site } from '../../site.config.mjs';
+const { heading = 'Come and find out where you stand.', body, primary = '/contact',
+        primaryLabel = 'Book a consultation' } = Astro.props;
+---
+<section class="endcta">
+  <div class="wrap">
+    <div class="panel inner">
+      <div>
+        <h2>{heading}</h2>
+        <p>{body ?? 'A full assessment, the options explained and an idea of what each would cost. Nothing is fitted on the day and nothing is decided for you.'}</p>
+      </div>
+      <div class="acts">
+        <a class="btn" href={primary}>{primaryLabel}</a>
+        <a class="btn ghost" href={`mailto:${site.contact.email}`}>Email the practice</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .endcta{padding-bottom:104px}
+  .inner{display:flex;gap:34px;align-items:center;justify-content:space-between;flex-wrap:wrap;
+         padding:44px 40px}
+  .inner h2{font-size:clamp(24px,3vw,32px);margin:0 0 10px}
+  .inner p{color:var(--soft);font-size:15.5px;max-width:52ch;margin:0}
+  .acts{display:flex;gap:12px;flex-wrap:wrap}
+  @media (max-width:760px){.endcta{padding-bottom:68px}.inner{padding:34px 26px}}
+</style>

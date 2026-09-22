@@ -1,0 +1,118 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import { site } from '../../site.config.mjs';
+const a = site.contact.address;
+const p = site.privacy;
+---
+<Base title="Terms of website use"
+      description="The terms on which Regent Orthodontics' website is provided: that the information here is general rather than clinical advice, what you may do with the site, and the law that governs it.">
+  <PageHead eyebrow="Terms of use"
+            title="What this website is, and is not."
+            lede="These terms govern your use of this site. The short version: everything here is general information to help you decide whether to come and see us, and none of it is advice about your teeth." />
+
+  <section>
+    <div class="wrap prose narrow">
+      {p.confirmed === false && (
+        <p class="warnbar"><span>This page reproduces POL-56, the practice's terms of website use.
+          It takes effect when the practice opens to patients, which cannot happen until RQIA has
+          granted registration.</span></p>
+      )}
+
+      <div class="blk">
+        <h2>Who we are</h2>
+        <p>This site is operated by {site.legal.companyName} (Companies House
+          {' '}{site.legal.companyNumber}), trading as {site.name}, of {a.street}, {a.locality},
+          {' '}{a.region}, {a.postcode}. Dental care at the practice is provided by professionals
+          registered with the {site.compliance.regulator.name}.</p>
+        {/* El registro de RQIA está en trámite y la clínica no abre hasta que
+             se conceda. Se dice así, y no como un hecho consumado. */}
+        <p>The practice does not open to patients until the Regulation and Quality Improvement
+          Authority has granted registration.</p>
+      </div>
+
+      <div class="blk">
+        <h2>The information here is general</h2>
+        <p>Nothing on this website is individual clinical advice and it is not a substitute for a
+          consultation. What is here is general, and it is given in good faith to help you decide
+          whether to come and see us. Whether a particular treatment suits you can only be decided
+          after an examination, and nothing written here creates a clinician–patient relationship.</p>
+        <p class="em">If you have a dental problem that needs attention, contact us or your own
+          dentist. If you have a medical emergency, call 999.</p>
+        <p>We take care to keep the site accurate and up to date, but we do not warrant that
+          everything on it is complete or current at all times. Fees, treatment options and
+          availability change.</p>
+      </div>
+
+      <div class="blk">
+        <h2>Using the site</h2>
+        <ul class="ticks">
+          <li><span>You may view, download and print pages for your own use, or to discuss
+            treatment with someone else</span></li>
+          <li><span>You must not use the site in any way that is unlawful, that could damage or
+            impair it, or that interferes with anyone else's use of it, and you must not attempt to
+            gain unauthorised access to it or to any system connected to it</span></li>
+          <li><span>You must not use an automated system to extract data from the site, copy
+            substantial parts of it, or republish its content as your own</span></li>
+          <li><span>Where the site lets you send us something, what you send must be accurate, must
+            be yours to send, and must not be unlawful, defamatory, offensive or a breach of
+            anyone's privacy. We may remove anything that is not</span></li>
+        </ul>
+      </div>
+
+      <div class="blk">
+        <h2>Content belonging to us and to others</h2>
+        <p>The content of this site — text, images, photographs, the practice name and the logo —
+          belongs to us or is used with permission, and is protected by copyright and trade mark
+          law. You may not reproduce it commercially without our written agreement. Clinical
+          photographs of patients appear only with their separate written consent.</p>
+        <p>If you believe anything on this site infringes your rights, tell us and we will look
+          into it promptly.</p>
+      </div>
+
+      <div class="blk">
+        <h2>Links</h2>
+        <p>Where we link to another website we do so because we think it may be useful. We do not
+          control those sites and are not responsible for their content or their privacy practices.
+          You may link to our home page provided you do so fairly and do not suggest an association
+          or endorsement that does not exist.</p>
+      </div>
+
+      <div class="blk">
+        <h2>Our liability</h2>
+        <p>We do not exclude or limit our liability for death or personal injury caused by our
+          negligence, for fraud or fraudulent misrepresentation, or for anything else that cannot
+          lawfully be excluded.</p>
+        <p>Subject to that, we are not liable for loss arising from your use of this website or
+          from reliance on the general information published on it, and we do not warrant that the
+          site will be uninterrupted or free from viruses.</p>
+        <p>Nothing in these terms affects your rights as a consumer, including under the Consumer
+          Rights Act 2015, and nothing here limits our responsibilities to you as a patient.</p>
+      </div>
+
+      <div class="blk">
+        <h2>Privacy and cookies</h2>
+        <p>How we handle information about you is explained in our
+          {' '}<a href="/privacy">privacy notice</a>, and what this site stores on your device — in
+          short, nothing — is explained on our <a href="/cookies">cookies page</a>.</p>
+      </div>
+
+      <div class="blk">
+        <h2>Changes and governing law</h2>
+        <p>We may change these terms from time to time; the version in force is the one published
+          here. These terms, and any dispute arising from them or from your use of this site, are
+          governed by the law of Northern Ireland, and the courts of Northern Ireland have
+          jurisdiction.</p>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .narrow{max-width:72ch}
+  .blk{padding:34px 0;border-top:1px solid var(--line)}
+  .blk:first-of-type{border-top:0;padding-top:0}
+  .prose a{color:var(--gold-dim)}
+  .prose .em{color:var(--ink);font-weight:500}
+  .warnbar{margin-bottom:30px}
+</style>

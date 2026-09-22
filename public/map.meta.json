@@ -1,0 +1,9 @@
+{
+  "lat": 54.594207,
+  "lon": -5.697875,
+  "zoom": 19,
+  "files": [
+    "public/map-wide.webp",
+    "public/map-square.webp"
+  ]
+}

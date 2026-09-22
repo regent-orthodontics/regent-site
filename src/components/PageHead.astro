@@ -1,0 +1,13 @@
+---
+const { eyebrow, docName, title, lede } = Astro.props;
+---
+<section class="phead">
+  <div class="wrap">
+    {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+    {/* El nombre formal del documento, encima del titular. Solo lo usa la
+        página de FOI: es el nombre por el que se cita el esquema. */}
+    {docName && <p class="docname">{docName}</p>}
+    <h1>{title}</h1>
+    {lede && <p class="lede">{lede}</p>}
+  </div>
+</section>

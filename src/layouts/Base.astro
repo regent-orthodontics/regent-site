@@ -1,0 +1,284 @@
+---
+import { site } from '../../site.config.mjs';
+import Schema from '../components/Schema.astro';
+import Compliance from '../components/Compliance.astro';
+import '../fonts.css';   // auto-alojadas: el sitio no contacta con terceros
+import mark from '../components/logo-mark.svg?raw';
+import word from '../components/logo-word.svg?raw';
+
+const { title, description, dark = false, overlayNav = false } = Astro.props;
+const pageTitle = title ? `${title} — ${site.name}` : `${site.name} — ${site.tagline}`;
+const desc = description ?? site.tagline;
+const canonical = new URL(Astro.url.pathname, site.url).href;
+const year = new Date().getFullYear();
+
+// Marcar dónde está el visitante. /treatments/metal-braces sigue siendo
+// "Treatments" — un submenú que se apaga al entrar en una ficha desorienta.
+const here = Astro.url.pathname.replace(/\.html$/, '').replace(/\/$/, '') || '/';
+const nav = [
+  { href: '/treatments',  label: 'Treatments' },
+  { href: '/fees',        label: 'Fees' },
+  { href: '/first-visit', label: 'Your first visit' },
+  { href: '/referrals',   label: 'Referrals' },
+  { href: '/contact',     label: 'Book a consultation', cta: true },
+];
+const isHere = (h) => here === h || here.startsWith(`${h}/`);
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{pageTitle}</title>
+  <meta name="description" content={desc} />
+  <link rel="canonical" href={canonical} />
+  <meta property="og:title" content={pageTitle} />
+  <meta property="og:description" content={desc} />
+  <meta property="og:url" content={canonical} />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="en_GB" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="sitemap" href="/sitemap-index.xml" />
+
+  <Schema />
+  <slot name="head" />
+  <style is:global>
+    /* Paleta exacta de Regent — la misma de v4, que a su vez venía del
+       index.astro real de la clínica. Aquí NO hay blanco puro en ninguna
+       parte: el "papel" es un crema más profundo que el fondo, y esa es la
+       razón de que el conjunto se lea cálido en lugar de clínico. */
+    :root{
+      /* POL-57 fija WCAG 2.2 AA como estándar del sitio. Sobre el crema, el
+         texto iba a 3,12:1 y los rótulos dorados a 2,34:1: por debajo del
+         4,5:1 que pide AA para texto normal. --gold NO se toca porque es el
+         fondo de los botones y el dorado de la marca; lo que se oscurece es
+         el gris del texto, el dorado de los enlaces y un --gold-text nuevo
+         que solo se usa cuando el dorado hace de letra. */
+      --gold:#B8956A; --gold-light:#D4B88A; --gold-dim:#7D664D; --gold-soft:#EDE3D2;
+      --gold-text:#7E6649;
+      --ink:#1A1816; --ink-soft:#2A2521;
+      --cream:#F5F0E8; --paper:#F0EBE0;
+      --soft:#6F6A63; --line:rgba(212,184,138,.24); --black:#0B0B0A;
+      --serif:'Fraunces',Georgia,serif;
+      --sans:'Public Sans',-apple-system,BlinkMacSystemFont,sans-serif;
+      --mono:'JetBrains Mono',ui-monospace,monospace;
+    }
+    *{box-sizing:border-box}
+    .skip{position:absolute;left:-9999px;top:0;z-index:100;background:var(--paper);
+          color:var(--ink);padding:12px 20px;border-radius:0 0 10px 0;text-decoration:none;
+          font-size:15px;font-weight:600;border:1px solid var(--gold)}
+    .skip:focus{left:0}
+    main:focus{outline:none}
+    body{margin:0;background:var(--cream);color:var(--ink);
+         font-family:var(--sans);font-size:17px;line-height:1.62;-webkit-font-smoothing:antialiased}
+    h1,h2,h3{font-family:var(--serif);font-weight:300;line-height:1.1;margin:0;
+             letter-spacing:-.022em;text-wrap:balance}
+    p{margin:0}
+    a{color:inherit}
+    a:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:3px}
+    .wrap{width:min(1180px,92vw);margin:0 auto}
+    .eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;
+             text-transform:uppercase;color:var(--gold-text);margin:0}
+    .lede{font-size:18.5px;line-height:1.7;color:var(--soft);max-width:58ch}
+    .btn{display:inline-block;text-decoration:none;font-size:15px;font-weight:600;
+         padding:13px 26px;border-radius:100px;background:var(--gold);color:#141210;
+         border:1px solid var(--gold)}
+    .btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+    section{padding:104px 0}
+    @media (max-width:760px){section{padding:68px 0}}
+
+    /* ── utilidades de las páginas interiores ────────────────────────
+       La portada tiene su propio lenguaje (el hero del bracket). Todo lo
+       demás comparte estas cinco piezas, y esa es la razón de que una
+       página nueva sea contenido y no diseño. */
+    .phead{padding:78px 0 0}
+    .phead .docname{font-size:17px;color:var(--soft);margin:11px 0 0;max-width:52ch}
+    .phead h1{font-size:clamp(34px,5.4vw,62px);margin:14px 0 0}
+    .phead .docname + h1{margin-top:10px}
+    .phead .lede{margin-top:22px;font-size:19.5px}
+    .rule{height:1px;background:var(--line);border:0;margin:0}
+    .prose h2{font-size:clamp(25px,3.2vw,34px);margin:0 0 18px}
+    .prose h3{font-size:20px;margin:0 0 10px}
+    .prose p{color:var(--soft);max-width:66ch;margin-bottom:16px}
+    .prose p:last-child{margin-bottom:0}
+    /* Una lista no lleva margen inferior y los párrafos solo llevan superior,
+       así que el texto que sigue a una lista se pegaba a su último punto y el
+       bloque se leía como un solo párrafo largo. */
+    .prose .ticks + p{margin-top:24px}
+    .panel{border:1px solid var(--line);border-radius:16px;padding:34px 32px;background:var(--paper)}
+    .ticks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:13px;
+           font-size:15.5px;color:var(--soft)}
+    .ticks li{display:flex;gap:12px;line-height:1.55}
+    .ticks li::before{content:"";flex:none;width:5px;height:5px;border-radius:50%;
+                      background:var(--gold);margin-top:9px}
+    .ticks.no li::before{background:none;border:1px solid var(--soft);opacity:.5}
+    .prov{display:inline-block;font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;
+          text-transform:uppercase;color:#A0491F}
+    /* El aviso de precio sin confirmar. Deliberadamente feo: si se
+       integrase en el diseño dejaría de leerse como una advertencia. */
+    .warnbar{border:1px solid rgba(160,73,31,.35);background:rgba(160,73,31,.06);
+             border-radius:12px;padding:16px 20px;font-size:14.5px;color:var(--ink-soft);
+             display:flex;gap:13px;align-items:flex-start;max-width:74ch}
+    .warnbar::before{content:"";flex:none;width:6px;height:6px;border-radius:50%;
+                     background:#A0491F;margin-top:9px}
+    /* ── página en negro ─────────────────────────────────────────────
+       No es un "modo oscuro" del sitio: es una decisión por página. El
+       producto es cristal transparente y solo se lee sobre negro, así que
+       la página entera acompaña a la fotografía en vez de pelearse con
+       ella. Todo cuelga de las mismas variables, así que basta con
+       redefinirlas: ni un componente sabe que está en negro. */
+    .dark{
+      --cream:#000; --paper:#0E0D0C;
+      --ink:#F5F0E8; --ink-soft:#D6CFC3; --soft:#948E85; --gold-text:#B8956A;
+      --gold-dim:#C9A87A;
+      --line:rgba(212,184,138,.19); --gold-soft:rgba(184,149,106,.14);
+    }
+    .dark .prov{color:#E4915F}
+    .dark .warnbar{border-color:rgba(228,145,95,.32);background:rgba(228,145,95,.07);
+                       color:var(--ink-soft)}
+    .dark .warnbar::before{background:#E4915F}
+    .dark .ticks.no li::before{border-color:var(--soft);opacity:.55}
+
+    @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+  </style>
+</head>
+<body class={dark ? "dark" : undefined}>
+  {/* Saltar la navegación. Sin esto, quien usa el teclado recorre los cinco
+       enlaces de la barra en cada página antes de llegar al contenido: es el
+       criterio 2.4.1 de las WCAG, y es de nivel A, por debajo del AA que
+       declara POL-57. Solo aparece al recibir el foco. */}
+  <a class="skip" href="#main">Skip to content</a>
+  <header class:list={["nav", overlayNav && "overlay"]}>
+    <div class="wrap navin">
+      <a class="brand" href="/" aria-label={`${site.name} — home`}>
+        <span class="mark"><Fragment set:html={mark} /></span>
+        <span class="word" aria-hidden="true"><Fragment set:html={word} /></span>
+      </a>
+      <nav>
+        {nav.map((n) => (
+          <a href={n.href} class={n.cta ? 'cta' : undefined}
+             aria-current={isHere(n.href) ? 'page' : undefined}>{n.label}</a>
+        ))}
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" tabindex="-1"><slot /></main>
+
+  <script>
+    // El nombre acompaña al monograma arriba del todo y se retira al bajar:
+    // pasados los primeros 140px la marca ya está presentada y lo que hace
+    // falta es sitio. Se encoge además de desvanecerse — si solo cambiara la
+    // opacidad quedaría un hueco del ancho del texto.
+    (() => {
+      const nav = document.querySelector('.nav');
+      const word = nav?.querySelector('.word');
+      if (!nav || !word) return;
+      // Solo cuando la barra se queda fija ENCIMA de un hero hay algo que
+      // fundir; en las fichas va superpuesta y no persigue el scroll.
+      const hero = nav.classList.contains('overlay') ? null : document.querySelector('.stage');
+      const ANCHO = 132, HUECO = 15, TRAMO = 260;
+      // Con hero, el nombre aguanta durante todo el recorrido del bracket y
+      // solo se retira en el último tramo, mientras el negro vira a crema y
+      // entra la sección siguiente. Es mucho scroll para ese gesto: por eso
+      // se ve lento sin necesidad de animarlo.
+      const DESDE = 0.78, HASTA = 0.99;
+      let pedido = false;
+
+      const pintar = () => {
+        pedido = false;
+        let t;
+        if (hero) {
+          const r = hero.getBoundingClientRect();
+          const recorrido = hero.offsetHeight - window.innerHeight;
+          const p = Math.min(1, Math.max(0, -r.top / recorrido));
+          t = Math.min(1, Math.max(0, (p - DESDE) / (HASTA - DESDE)));
+        } else {
+          t = Math.min(1, Math.max(0, window.scrollY / TRAMO));
+        }
+        // Difuminar y encoger a la vez recortaba las letras por la derecha:
+        // se leía "REGE" a media transición en lugar de un desvanecido. La
+        // opacidad se va primero y el hueco se cierra después, cuando ya no
+        // hay nada visible que cortar.
+        const fundido = Math.min(1, t / 0.72);
+        const cierre = Math.max(0, (t - 0.72) / 0.28);
+        word.style.setProperty('--word-o', String(1 - fundido));
+        word.style.setProperty('--word-w', `${(1 - cierre) * ANCHO}px`);
+        word.style.setProperty('--word-gap', `${(1 - cierre) * HUECO}px`);
+        nav.classList.toggle('solid', window.scrollY > 4);
+        if (hero) {
+          const r = hero.getBoundingClientRect();
+          nav.classList.toggle('on-hero', r.bottom > nav.offsetHeight);
+        }
+      };
+
+      addEventListener('scroll', () => {
+        if (!pedido) { pedido = true; requestAnimationFrame(pintar); }
+      }, { passive: true });
+      pintar();
+    })();
+  </script>
+
+  <div class="wrap"><Compliance /></div>
+
+  <footer>
+    <div class="wrap">
+      <p>&copy; {year} {site.name}. A trading name of {site.legal.companyName}.
+         Registered in Northern Ireland No. {site.legal.companyNumber}.</p>
+      <p><a href="/foi">FOI Publication</a> · <a href="/privacy">Privacy</a> · <a href="/cookies">Cookies</a> ·
+         <a href="/terms">Terms of use</a> · <a href="/accessibility">Accessibility</a> ·
+         <a href="/complaints">Complaints</a></p>
+    </div>
+  </footer>
+
+  <style>
+    .nav{border-bottom:1px solid var(--line);background:var(--paper);position:relative;z-index:10}
+    :global(.dark) .nav{background:#000}
+    /* Sobre un hero a pantalla completa la barra se superpone en vez de
+       empujarlo hacia abajo. En vertical se desdobla en dos filas y llega a
+       comerse 176px: sin esto el producto entra cortado por debajo, que es
+       justo la primera pantalla que ve nadie. */
+    .nav.overlay{position:absolute;top:0;left:0;right:0;background:transparent;border-bottom:0}
+    .navin{display:flex;justify-content:space-between;align-items:center;gap:20px;
+           padding:20px 0;flex-wrap:wrap}
+    .brand{display:flex;align-items:center;text-decoration:none;color:#595959}
+    .mark{line-height:0;flex:none}
+    .mark :global(svg){height:42px;width:auto;display:block}
+    /* El nombre se retira al bajar y deja el monograma solo. Se encoge además
+       de desvanecerse: si solo bajara la opacidad quedaría un hueco del ancho
+       del texto y la barra se vería descuadrada. */
+    .word{line-height:0;overflow:hidden;flex:none;
+          width:var(--word-w,132px);opacity:var(--word-o,1);
+          margin-left:var(--word-gap,15px)}
+    .word :global(svg){height:28px;width:132px;display:block}
+    /* Sobre negro el carbón del logotipo desaparece: el monograma pasa a
+       crema y el dorado se queda donde está, que es la mitad que identifica
+       la marca. */
+    :global(.dark) .brand{color:var(--ink)}
+    /* Sticky: sin barra que se quede, no hay nada que desvanecer al bajar. */
+    .nav:not(.overlay){position:sticky;top:0}
+    .nav.solid{box-shadow:0 1px 0 var(--line)}
+    .nav.on-hero{background:var(--hero-bg,#0B0B0A);color:var(--hero-fg,#fff);
+                 border-bottom-color:transparent;box-shadow:none}
+    .nav.on-hero .brand,.nav.on-hero nav a{color:var(--hero-fg,#fff)}
+    .nav.on-hero .cta{border-color:currentColor;opacity:.92}
+    @media (max-width:760px){
+      .brand :global(svg){height:34px}
+      .brand{gap:10px}
+      .word{font-size:17px}
+      .word em{font-size:8px;letter-spacing:.16em}
+    }
+    .nav nav{display:flex;gap:26px;align-items:center;font-size:15px;flex-wrap:wrap}
+    .nav nav a{text-decoration:none;color:var(--soft)}
+    .nav nav a:hover{color:var(--ink)}
+    .nav nav a[aria-current="page"]{color:var(--ink)}
+    .nav nav a[aria-current="page"]:not(.cta){box-shadow:inset 0 -1px 0 var(--gold)}
+    .nav .cta[aria-current="page"]{border-color:var(--gold-text);background:var(--gold-soft)}
+    .nav .cta{color:var(--ink);border:1px solid var(--line);border-radius:100px;padding:9px 18px}
+    .nav .cta:hover{border-color:var(--gold-text);background:var(--gold-soft)}
+    footer{border-top:1px solid var(--line);padding:34px 0 60px;font-size:13.5px;color:var(--soft)}
+    footer p{margin-bottom:6px}
+    @media (max-width:760px){.nav nav{gap:16px;font-size:14px;width:100%}}
+  </style>
+</body>
+</html>

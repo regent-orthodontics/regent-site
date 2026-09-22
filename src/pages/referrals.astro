@@ -1,0 +1,111 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import { site } from '../../site.config.mjs';
+const r = site.referrals;
+const gdc = site.compliance.registrations[0];
+---
+<Base title="Referrals"
+      description="Information for dentists referring a patient to Regent Orthodontics, Newtownards: what we accept, what to include, and how we report back.">
+  <PageHead eyebrow="For referring dentists"
+            title="Send the patient, keep the patient."
+            lede={r.lede} />
+
+  <section>
+    <div class="wrap">
+      <div class="two">
+        <div class="panel">
+          <h2>What we accept</h2>
+          <ul class="ticks">{r.accept.map((i) => <li>{i}</li>)}</ul>
+        </div>
+        <div class="panel">
+          <h2>What we do not</h2>
+          <ul class="ticks no">{r.dontAccept.map((i) => <li>{i}</li>)}</ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule" />
+
+  <section class="how">
+    <div class="wrap">
+      <p class="eyebrow">How to refer</p>
+      <h2>There is no form. Write to us.</h2>
+      <p class="lede">A web form would either drop the clinical detail or carry it over an
+        unencrypted channel. Neither is acceptable for a patient record, so we agree the route
+        with you first and the records follow by one that is.</p>
+
+      <div class="cols">
+        <div>
+          <h3>What to include</h3>
+          <ul class="ticks">{r.include.map((i) => <li>{i}</li>)}</ul>
+          <p class="warnbar"><span>{r.secureNote}</span></p>
+        </div>
+
+        <div class="channel panel">
+          <h3>Contact the practice</h3>
+          {/* overflow-wrap:anywhere parte por donde cae y dejaba la "m" final
+              sola en su línea. Con un <wbr> tras la arroba el único punto de
+              ruptura posible es ese, así que o entra entero o parte por donde
+              un lector espera que parta. */}
+          <p class="big"><a href={`mailto:${site.contact.email}`}>
+            {site.contact.email.split('@')[0]}@<wbr />{site.contact.email.split('@')[1]}</a></p>
+          {site.contact.phonePending && (
+            <p class="prov">the practice telephone line is not live yet</p>
+          )}
+          <p class="hrs">{site.hours[0].days.replace('-', ' to ')} ·
+            {' '}{site.hours[0].open}–{site.hours[0].close}</p>
+          <p class="addr">{site.contact.address.street}<br />{site.contact.address.locality}<br />
+            {site.contact.address.region} {site.contact.address.postcode}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="back">
+    <div class="wrap">
+      <div class="two">
+        <div>
+          <h2>What you get back</h2>
+          <ul class="ticks">{r.afterwards.map((i) => <li>{i}</li>)}</ul>
+        </div>
+        <div class="who panel">
+          <h3>Who will be treating them</h3>
+          <p><strong>{gdc.person}</strong><br />{gdc.qualifications.join(' · ')}</p>
+          <p class="reg">{site.compliance.regulator.name} registration no. {gdc.number}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:22px}
+  .two h2{font-size:21px;margin:0 0 22px}
+
+  .how h2{font-size:clamp(26px,3.4vw,38px);margin:14px 0 0}
+  .how .lede{margin-top:20px}
+  .cols{display:grid;grid-template-columns:1fr 340px;gap:52px;margin-top:52px;align-items:start}
+  .cols h3{font-size:12px;font-family:var(--mono);letter-spacing:.14em;text-transform:uppercase;
+           color:var(--gold-text);margin:0 0 20px;font-weight:400}
+  .cols .warnbar{margin-top:26px}
+
+  .channel .big{font-family:var(--serif);font-size:clamp(15px,1.75vw,19px);margin:0;
+                overflow-wrap:normal;word-break:normal;line-height:1.35}
+  .channel .big a{text-decoration:none}
+  .channel .prov{margin:8px 0 0}
+  .channel .em{margin:16px 0 0;font-size:15.5px}
+  .channel .em a{color:var(--gold-dim)}
+  .channel .hrs{margin:20px 0 0;font-size:14px;color:var(--soft);padding-top:18px;
+                border-top:1px solid var(--line)}
+  .channel .addr{margin:14px 0 0;font-size:14px;color:var(--soft);line-height:1.6}
+
+  .back{padding-top:0}
+  .who h3{font-size:12px;font-family:var(--mono);letter-spacing:.14em;text-transform:uppercase;
+          color:var(--gold-text);margin:0 0 18px;font-weight:400}
+  .who p{margin:0 0 12px;font-size:15.5px}
+  .who .reg{color:var(--soft);font-size:14px}
+
+  @media (max-width:900px){.cols{grid-template-columns:1fr;gap:34px}}
+</style>

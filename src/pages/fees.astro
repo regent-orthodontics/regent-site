@@ -1,0 +1,198 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import EndCta from '../components/EndCta.astro';
+import { site } from '../../site.config.mjs';
+
+const money = (n) => n === 0 ? 'Free' : new Intl.NumberFormat('en-GB',
+  { style:'currency', currency:site.currency, maximumFractionDigits:0 }).format(n);
+
+const f = site.fees;
+// La consulta sale de la tabla: es el único precio que el paciente busca
+// antes de decidirse a venir, y enterrarlo en una fila lo esconde.
+const consulta = site.services.find((s) => s.free);
+const tratamientos = site.services.filter((s) => !s.free);
+// El aviso miraba `confirmed` por servicio y no entraba en los tramos: un
+// sistema sin tarifar dentro de un tratamiento confirmado salía como un
+// hueco en la tabla sin que nada arriba lo explicara.
+const unconfirmed = [
+  ...site.services.filter((s) => s.confirmed === false).map((s) => s.name),
+  ...site.services.flatMap((s) => (s.tiers ?? [])
+    .filter((t) => t.price === null || t.pending).map((t) => t.label)),
+  ...f.extras.filter((e) => e.confirmed === false).map((e) => e.name),
+];
+---
+<Base title="Fees"
+      description="What orthodontic treatment costs at Regent Orthodontics in Newtownards: a free consultation, and published prices for braces, aligners and retainers by arch.">
+  <PageHead eyebrow="Fees"
+            title="What it costs, before you ask." />
+
+  <section>
+    <div class="wrap">
+      {unconfirmed.length > 0 && (
+        <p class="warnbar">
+          <span>One or more figures on this page are still to be confirmed by the practice and are
+          marked as such. Everything else is the price.</span>
+        </p>
+      )}
+
+      {consulta && (
+        <div class="panel first">
+          <div class="fmain">
+            <p class="flabel">The first appointment</p>
+            <h2>The consultation is free.</h2>
+            <p class="fdesc">{consulta.detail.priceNote}</p>
+          </div>
+          <ul class="ftiers">
+            {consulta.tiers.map((t) => (
+              <li><span>{t.label}</span>
+                <b>{t.from ? 'from ' : ''}{money(t.price)}</b></li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <p class="lede intro">{f.intro}</p>
+
+      {/* Con tramos por arcada y por edad, una celda de precio por fila ya no
+           sirve: lo que el paciente necesita comparar es una arcada contra
+           dos, y eso pide una lista dentro de la fila. */}
+      <div class="tlist">
+        {tratamientos.map((s) => (
+          <article class="trow">
+            <div class="tmain">
+              <h3><a href={`/treatments/${s.slug}`}>{s.name}</a></h3>
+              <p class="tdesc">{s.description}</p>
+              {s.confirmed === false && <span class="prov">indicative</span>}
+            </div>
+            <ul class="tiers">
+              {s.tiers
+                ? s.tiers.map((t) => (
+                    <li><span>{t.label}</span>
+                      {t.price === null || t.pending
+                        ? <span class="prov">price to confirm</span>
+                        : <b>{t.from ? 'from ' : ''}{money(t.price)}</b>}</li>
+                  ))
+                : <li><span>All cases</span>
+                    <b>{s.from ? 'from ' : ''}{money(s.price)}</b></li>}
+            </ul>
+          </article>
+        ))}
+      </div>
+      <p class="foot">{f.note} The total depends on how much movement your teeth need, not on how
+        long you have had the problem.</p>
+    </div>
+  </section>
+
+  <hr class="rule" />
+
+  <section class="inout">
+    <div class="wrap">
+      <div class="two">
+        <div class="panel">
+          <h2>What the fee covers</h2>
+          <ul class="ticks">{f.included.map((i) => <li><span>{i}</span></li>)}</ul>
+        </div>
+        <div class="panel">
+          <h2>What it does not</h2>
+          <ul class="ticks no">{f.excluded.map((i) => <li><span>{i}</span></li>)}</ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="extras">
+    <div class="wrap">
+      <h2>Everything else</h2>
+      <p class="lede">The charges that come up after treatment, or when something breaks. They are
+        here rather than in a leaflet you get on the day.</p>
+      <ul class="xlist">
+        {f.extras.map((e) => (
+          <li>
+            <div class="x-main">
+              <h3>{e.name}</h3>
+              {e.note && <p>{e.note}</p>}
+            </div>
+            <p class="x-price">
+              {e.confirmed === false && <span class="prov">indicative</span>}
+              <span class="fig">{e.from ? 'from ' : ''}{money(e.price)}</span>
+            </p>
+          </li>
+        ))}
+        {f.noCharge?.map((n) => (
+          <li>
+            <div class="x-main"><h3>{n}</h3></div>
+            <p class="x-price"><span class="fig free">No charge</span></p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <hr class="rule" />
+
+  <section class="pay">
+    <div class="wrap prose">
+      <h2>Paying for treatment</h2>
+      {f.payment.lines.map((l) => <p>{l}</p>)}
+      {f.payment.confirmed === false && (
+        <p class="warnbar"><span>The payment terms above are a draft and have not been confirmed
+          by the practice.</span></p>
+      )}
+    </div>
+  </section>
+
+  <EndCta heading="The consultation costs nothing."
+          body="A full assessment and an honest indication of what your own treatment would cost. The exact figure comes later, in your written plan. Nothing is fitted on the day." />
+</Base>
+
+<style>
+  .intro{max-width:70ch;margin:44px 0 44px}
+  .warnbar{margin-bottom:34px}
+
+  /* La consulta gratuita, fuera de la tabla y con el peso que tiene. */
+  .first{display:grid;grid-template-columns:1fr 300px;gap:44px;align-items:center;
+         margin-bottom:8px}
+  .flabel{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+          color:var(--gold-text);margin:0 0 14px}
+  .first h2{font-size:clamp(26px,3.4vw,38px);margin:0 0 14px}
+  .fdesc{color:var(--soft);font-size:15.5px;margin:0;max-width:52ch}
+  .ftiers,.tiers{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+  .ftiers li,.tiers li{display:flex;justify-content:space-between;gap:18px;align-items:baseline;
+                       font-size:14.5px;color:var(--soft);padding-bottom:10px;
+                       border-bottom:1px solid var(--line)}
+  .ftiers li:last-child,.tiers li:last-child{border-bottom:0;padding-bottom:0}
+  .ftiers b,.tiers b{font-family:var(--serif);font-size:21px;font-weight:400;color:var(--ink);
+                     white-space:nowrap}
+
+  .tlist{display:flex;flex-direction:column;border-top:1px solid var(--line)}
+  .trow{display:grid;grid-template-columns:1fr 300px;gap:44px;padding:30px 0;
+        border-bottom:1px solid var(--line);align-items:start}
+  .tmain h3{font-size:clamp(20px,2.6vw,26px);font-family:var(--serif);font-weight:300;margin:0 0 10px}
+  .tmain h3 a{text-decoration:none}
+  .tmain h3 a:hover{color:var(--gold-dim)}
+  .tdesc{color:var(--soft);font-size:15px;max-width:58ch;margin:0}
+  .tmain .prov{margin-top:10px}
+  .foot{margin-top:24px;font-size:14.5px;color:var(--soft);max-width:64ch}
+
+  .inout .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:22px}
+  .inout h2{font-size:21px;margin:0 0 22px}
+
+  .extras h2{font-size:clamp(25px,3.2vw,34px);margin:0 0 14px}
+  .xlist{list-style:none;margin:44px 0 0;padding:0;border-top:1px solid var(--line)}
+  .xlist li{display:flex;gap:30px;justify-content:space-between;align-items:baseline;
+            padding:22px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+  .x-main h3{font-size:17.5px;font-family:var(--sans);font-weight:600;margin:0 0 4px}
+  .x-main p{margin:0;font-size:14.5px;color:var(--soft);max-width:56ch}
+  .x-price{margin:0;text-align:right;white-space:nowrap}
+  .x-price .fig{font-family:var(--serif);font-size:22px}
+  .x-price .fig.free{color:var(--gold-dim)}
+  .x-price .prov{display:block;margin-bottom:2px}
+
+  .pay .warnbar{margin-top:26px}
+
+  @media (max-width:820px){
+    .first,.trow{grid-template-columns:1fr;gap:22px}
+    .first{padding:30px 26px}
+  }
+</style>

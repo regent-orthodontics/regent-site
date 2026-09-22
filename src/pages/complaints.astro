@@ -1,0 +1,104 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import { site } from '../../site.config.mjs';
+const c = site.compliance;
+const a = site.contact.address;
+const esc = c.complaints.escalation;
+const words = { 2: 'two', 20: 'twenty' };
+const ack = words[c.complaints.acknowledgeDays] ?? c.complaints.acknowledgeDays;
+const rep = words[c.complaints.respondDays] ?? c.complaints.respondDays;
+---
+<Base title="Complaints"
+      description="How to complain about treatment at Regent Orthodontics, how quickly we respond, and where to take it if our answer does not satisfy you.">
+  <PageHead eyebrow="Complaints"
+            title="If something has gone wrong, say so."
+            lede="A complaint that reaches us is one we can put right. Nothing about raising one affects the care you receive." />
+
+  <section>
+    <div class="wrap prose narrow">
+      <div class="blk">
+        <h2>How to raise it</h2>
+        <p>{c.complaints.procedure}</p>
+        <p>In writing: {site.name}, {a.street}, {a.locality}, {a.region} {a.postcode}.
+          By email: <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>.
+          In person: tell anyone at the practice.</p>
+        <p class="who">Complaints are handled by <strong>{c.complaints.manager}</strong>,
+          {' '}{c.complaints.managerRole}, who is at the practice during opening hours.</p>
+      </div>
+
+      <div class="blk">
+        <h2>What happens then</h2>
+        <ul class="ticks">
+          <li><span>We acknowledge every complaint in writing within <strong>{ack} working days</strong></span></li>
+          <li><span>We offer you a meeting, explain who will look into it and ask how you want to be kept informed</span></li>
+          <li><span>We send a full written response within <strong>{rep} working days</strong></span></li>
+          <li><span>If a complex case will take longer, we tell you why and keep you updated</span></li>
+          <li><span>Where we got something wrong, we say so, apologise and explain what we are changing</span></li>
+        </ul>
+        <p class="small">Complaints can be made by a patient, by a parent, by someone acting on a
+          patient's behalf or with their consent, and by anyone affected by what we do. We make
+          reasonable adjustments for anyone who needs support to complain, and we explain the
+          procedure in a way that suits a child who is complaining themselves.</p>
+      </div>
+
+      <div class="blk">
+        <h2>If our answer does not satisfy you</h2>
+
+        {/* RQIA primero y en su propio panel: es el regulador del servicio y
+             la única vía abierta a todos los pacientes en cualquier momento.
+             Enterrarla en una lista la haría parecer una alternativa entre
+             varias, y no lo es. */}
+        <div class="panel rqia">
+          <h3>Our regulator</h3>
+          <p class="name">{esc.rqia.name}</p>
+          <p class="det">{esc.rqia.address}<br />
+            <a href={`mailto:${esc.rqia.email}`}>{esc.rqia.email}</a></p>
+          <p class="note">{esc.rqia.note}</p>
+        </div>
+
+        <h3 class="sub">Other routes</h3>
+        <ul class="ticks">
+          <li><span><strong>{esc.hsc.name}.</strong> {esc.hsc.note} We will also point you to
+            independent advocacy through the {esc.hsc.advocacy}.</span></li>
+          <li><span><strong>{c.regulator.name}</strong>{c.regulator.phone && <>, {c.regulator.phone}</>}.
+            {' '}{esc.gdc.note}</span></li>
+          <li><span><strong>{esc.finance.name}.</strong> {esc.finance.note}</span></li>
+        </ul>
+
+        <p class="small">If your complaint is that we have mishandled your personal information,
+          you can complain to the <a href={site.privacy.ico.url} rel="noopener">{site.privacy.ico.name}</a>
+          {' '}at any time. Our ICO registration number is {site.privacy.ico.registration}.
+          Coming to us first is not a condition, and it does not affect your care.</p>
+      </div>
+
+      <div class="blk">
+        <h2>Who is registered here</h2>
+        <ul class="ticks">
+          {c.registrations.map((r) => (
+            <li><span>{r.person} — {r.qualifications.join(' · ')}, {c.regulator.name} no. {r.number}
+              {r.role && <> · {r.role}</>}</span></li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .narrow{max-width:72ch}
+  .blk{padding:34px 0;border-top:1px solid var(--line)}
+  .blk:first-of-type{border-top:0;padding-top:0}
+  .prose a{color:var(--gold-dim)}
+  .who{padding-top:16px;border-top:1px solid var(--line);margin-top:4px}
+  .small{font-size:14.5px;margin-top:20px}
+  .rqia{margin:26px 0 0}
+  .rqia h3{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+           color:var(--gold-text);margin:0 0 16px;font-weight:400}
+  .rqia .name{font-family:var(--serif);font-size:20px;color:var(--ink);margin:0 0 12px;
+              max-width:none}
+  .rqia .det{font-size:15px;margin:0 0 14px}
+  .rqia .note{font-size:14.5px;padding-top:14px;border-top:1px solid var(--line);margin:0}
+  .sub{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+       color:var(--gold-text);margin:34px 0 18px;font-weight:400}
+</style>

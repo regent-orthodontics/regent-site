@@ -1,0 +1,143 @@
+---
+import Base from '../../layouts/Base.astro';
+import EndCta from '../../components/EndCta.astro';
+import TreatmentHero from '../../components/TreatmentHero.astro';
+import { site } from '../../../site.config.mjs';
+
+export function getStaticPaths() {
+  return site.services.filter((s) => s.slug).map((s) => ({ params: { slug: s.slug }, props: { s } }));
+}
+const { s } = Astro.props;
+const d = s.detail ?? {};
+const others = site.services.filter((o) => o.slug && o.slug !== s.slug);
+
+// Una FAQ marcada como tal es lo que un asistente cita literalmente. Sin
+// esto la respuesta se la inventa a partir del texto corrido.
+const faqSchema = d.faq?.length ? {
+  '@context':'https://schema.org', '@type':'FAQPage',
+  mainEntity: d.faq.map((f) => ({ '@type':'Question', name:f.q,
+    acceptedAnswer:{ '@type':'Answer', text:f.a } })),
+} : null;
+---
+<Base title={s.name} description={s.description} dark={s.hero?.dark === true} overlayNav={Boolean(s.hero)}>
+  {faqSchema && <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} slot="head" />}
+
+  {s.hero && <TreatmentHero hero={s.hero} name={s.name} />}
+
+  <section class={s.hero ? 'phead after-hero' : 'phead'}>
+    <div class="wrap">
+      <p class="crumb"><a href="/treatments">Treatments</a> <span>/</span> {s.name}</p>
+      {s.hero ? <p class="h1 as-h2">{s.name}</p> : <h1>{s.name}</h1>}
+      <p class="lede">{s.description}</p>
+
+      <div class="pricebox">
+        <div>
+          <p class="plabel">What it costs</p>
+          {/* Mandar a /fees a averiguar que algo es gratis desperdicia la
+              respuesta: es el dato que trae a la gente a esta página. */}
+          <p class="pfig">{s.free ? 'Nothing' : <a href="/fees">See fees →</a>}</p>
+        </div>
+        {d.priceNote && <p class="pnote">{d.priceNote}</p>}
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule" />
+
+  <section class="body">
+    <div class="wrap cols">
+      <div class="prose">
+        {d.sections?.map((sec) => (
+          <div class="block">
+            <h2>{sec.heading}</h2>
+            {sec.paragraphs?.map((p) => <p>{p}</p>)}
+            {sec.list && <ul class="ticks">{sec.list.map((l) => <li>{l}</li>)}</ul>}
+          </div>
+        ))}
+      </div>
+
+      <aside class="side">
+        <div class="panel">
+          <h3>Other treatments</h3>
+          <ul class="plain">
+            {others.map((o) => (
+              <li><a href={`/treatments/${o.slug}`}>{o.name}</a></li>
+            ))}
+          </ul>
+          <a class="btn ghost" href="/fees">All fees</a>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  {d.faq?.length > 0 && (
+    <section class="faq">
+      <div class="wrap">
+        <p class="eyebrow">Questions</p>
+        <h2>What people ask</h2>
+        <div class="qs">
+          {d.faq.map((f) => (
+            <div class="q">
+              <h3>{f.q}</h3>
+              <p>{f.a}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <EndCta heading={s.free
+            ? 'Come and find out where you stand.'
+            : `Is ${s.name.toLowerCase()} right for your teeth?`}
+          body={s.free
+            ? 'It costs nothing to ask. You leave with the options set out — including the ones you did not come in asking about — and an idea of what each would cost.'
+            : 'That is what the consultation answers. You leave with the options set out — including the ones you did not come in asking about — and an idea of what each would cost.'} />
+</Base>
+
+<style>
+    /* Con hero, el <h1> vive dentro de él: aquí el nombre repite en menor
+     tamaño, y sigue siendo el mismo texto para quien navega con lector. */
+  .as-h2{font-family:var(--serif);font-weight:300;line-height:1.1;letter-spacing:-.022em;
+         font-size:clamp(30px,4.4vw,52px);margin:0}
+  .after-hero{padding-top:96px}
+  .crumb{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+         color:var(--soft);margin:0 0 20px}
+  .crumb a{color:var(--gold-text);text-decoration:none}
+  .crumb span{margin:0 8px;opacity:.5}
+
+  .pricebox{margin-top:44px;display:flex;gap:34px;align-items:flex-start;flex-wrap:wrap;
+            border-top:1px solid var(--line);padding-top:30px}
+  .plabel{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+          color:var(--gold-text);margin:0 0 6px}
+  .pfig{font-family:var(--serif);font-size:30px;line-height:1;margin:0;white-space:nowrap}
+  .pfig a{text-decoration:none;color:var(--gold-dim)}
+  .pfig a:hover{color:var(--gold-text)}
+  .pnote{color:var(--soft);font-size:14.5px;max-width:50ch;margin:0;padding-top:6px}
+
+  .cols{display:grid;grid-template-columns:1fr 300px;gap:64px;align-items:start}
+  .block{margin-bottom:52px}
+  .block:last-child{margin-bottom:0}
+  .block .ticks{margin-top:18px}
+
+  .side{position:sticky;top:28px}
+  .side h3{font-size:12px;font-family:var(--mono);letter-spacing:.14em;text-transform:uppercase;
+           color:var(--gold-text);margin:0 0 18px;font-weight:400}
+  .plain{list-style:none;margin:0 0 24px;padding:0;display:flex;flex-direction:column}
+  .plain li{display:flex;justify-content:space-between;gap:14px;font-size:15px;
+            padding:11px 0;border-bottom:1px solid var(--line)}
+  .plain a{text-decoration:none}
+  .plain a:hover{color:var(--gold-dim)}
+  .plain span{color:var(--soft);font-size:13.5px;white-space:nowrap}
+
+  .faq{background:var(--paper);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .faq h2{font-size:clamp(25px,3.2vw,36px);margin:14px 0 0}
+  .qs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:34px;margin-top:48px}
+  .q h3{font-size:18px;font-family:var(--sans);font-weight:600;margin:0 0 8px}
+  .q p{color:var(--soft);font-size:15.5px;margin:0}
+
+  @media (max-width:900px){
+    .cols{grid-template-columns:1fr;gap:44px}
+    .side{position:static}
+  }
+</style>

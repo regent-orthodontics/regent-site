@@ -1,0 +1,70 @@
+---
+import { site } from '../../site.config.mjs';
+const a = site.contact.address;
+const { height = 420, caption = true } = Astro.props;
+
+// El mapa es una imagen nuestra, compuesta con scripts/build-map.py desde
+// los tiles de OpenStreetMap. Ni iframe, ni cookies, ni la IP del paciente
+// saliendo hacia Google o hacia osm.org al abrir la página. Los enlaces de
+// abajo son opt-in: se sale a un tercero solo si el visitante lo pide.
+const gmaps = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+  `${a.street}, ${a.locality}, ${a.postcode}`)}`;
+const dirs = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
+  `${a.street}, ${a.locality}, ${a.postcode}`)}`;
+const osm = `https://www.openstreetmap.org/?mlat=${a.lat}&mlon=${a.lon}#map=18/${a.lat}/${a.lon}`;
+---
+<figure class="map">
+  <a class="frame" href={osm} rel="noopener" style={`--h:${height}px`}
+     aria-label={`Larger map of ${site.name}, ${a.street}, ${a.locality} ${a.postcode}`}>
+    <picture>
+      <source media="(max-width:640px)" srcset="/map-square.webp" width="760" height="760" />
+      <img src="/map-wide.webp" width="2360" height="880" loading="lazy" decoding="async"
+           alt={`Street map of ${a.locality} with ${site.name} marked on ${a.street}`} />
+    </picture>
+    <svg class="pin" viewBox="0 0 24 34" aria-hidden="true">
+      <path d="M12 0C5.4 0 0 5.4 0 12c0 8.6 12 22 12 22s12-13.4 12-22C24 5.4 18.6 0 12 0z" />
+      <circle cx="12" cy="12" r="4.4" />
+    </svg>
+    <span class="badge">{site.name}<em>{a.street}</em></span>
+  </a>
+  {caption && (
+    <figcaption>
+      <span class="attr">Map data &copy;{' '}
+        <a href="https://www.openstreetmap.org/copyright" rel="noopener">OpenStreetMap</a> contributors</span>
+      <span class="links">
+        <a href={dirs} rel="noopener">Directions</a>
+        <a href={gmaps} rel="noopener">Google Maps</a>
+        <a href={osm} rel="noopener">Larger map</a>
+      </span>
+    </figcaption>
+  )}
+</figure>
+
+<style>
+  .map{margin:0}
+  .frame{position:relative;display:block;height:var(--h);border:1px solid var(--line);
+         border-radius:14px;overflow:hidden;background:var(--paper)}
+  .frame img{width:100%;height:100%;object-fit:cover;display:block;
+             /* Mapnik llega gris y frío; la página es crema. */
+             filter:sepia(.4) saturate(.74) hue-rotate(-6deg) contrast(.97) brightness(1.03)}
+  .frame:hover img{filter:sepia(.3) saturate(.85) contrast(1) brightness(1.02)}
+  .pin{position:absolute;left:50%;top:50%;width:30px;height:42px;
+       transform:translate(-50%,-100%);filter:drop-shadow(0 4px 6px rgba(0,0,0,.34))}
+  .pin path{fill:var(--gold)}
+  .pin circle{fill:var(--paper)}
+  .badge{position:absolute;left:50%;top:calc(50% + 14px);transform:translateX(-50%);
+         background:var(--black);color:var(--cream);font-size:12.5px;line-height:1.35;
+         padding:9px 15px;border-radius:9px;white-space:nowrap;text-align:center;
+         box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .badge em{display:block;font-style:normal;color:var(--gold-light);font-size:11px;
+            font-family:var(--mono);letter-spacing:.05em;margin-top:2px}
+  .frame:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+
+  figcaption{display:flex;justify-content:space-between;align-items:baseline;gap:20px;
+             flex-wrap:wrap;margin-top:13px;font-size:13px;color:var(--soft)}
+  .attr a{color:var(--soft)}
+  .links{display:flex;gap:18px;font-size:14px}
+  .links a{color:var(--gold-dim);text-decoration:none}
+  .links a:hover{text-decoration:underline}
+  @media (max-width:640px){.frame{height:300px}}
+</style>

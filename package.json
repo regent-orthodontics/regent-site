@@ -1,15 +1,19 @@
 {
-  "name": "regent-site",
+  "name": "regent-orthodontics",
   "type": "module",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "engines": {
     "node": ">=22.12.0"
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro build && node scripts/check-compliance.mjs",
+    "build:only": "astro build",
+    "check": "node scripts/check-compliance.mjs",
     "preview": "astro preview",
-    "astro": "astro"
+    "review": "astro build && node scripts/build-review.mjs && ./scripts/shoot.sh && python3 scripts/thumbs.py && node scripts/build-gallery.mjs",
+    "logo": "python3 scripts/build-logo.py",
+    "map": "python3 scripts/build-map.py"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",

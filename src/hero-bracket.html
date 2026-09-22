@@ -1,0 +1,46 @@
+<!-- ═══════════════════════════════════════════════════════════════════
+     Hero de Regent — el bracket que gira con el scroll.
+
+     El bloque mide 300vh: el visitante recorre tres pantallas de scroll
+     mientras la escena se queda fija y sólo avanza el giro. Es el patrón
+     de Apple, y el texto va cambiando encima en tres momentos.
+
+     Regla que no se rompe: el titular y el botón se leen desde el primer
+     píxel, sin esperar a que cargue nada. Quien no baje ya sabe qué es
+     esto y dónde está.
+     ═══════════════════════════════════════════════════════════════════ -->
+
+<section class="pin" id="pin">
+  <div class="sticky">
+    <canvas id="bracket" aria-hidden="true"></canvas>
+    <img id="firstframe" src="/frames/f000.jpg" alt="" aria-hidden="true" />
+
+    <div class="veil"></div>
+
+    <div class="copy">
+      <p class="eyebrow">11 Regent Street · Newtownards</p>
+      <h1>Specialist orthodontics,<br /><em>and nothing else.</em></h1>
+
+      <div class="beats">
+        <p class="beat on" data-at="0">
+          Braces and aligners for children, teenagers and adults — planned and fitted
+          by a specialist orthodontist.
+        </p>
+        <p class="beat" data-at="1">
+          One clinician, from the first visit to the last retainer. The person who plans
+          your treatment is the person who does it.
+        </p>
+        <p class="beat" data-at="2">
+          A single surgery in the centre of town. Fees published in full, before you commit.
+        </p>
+      </div>
+
+      <div class="acts">
+        <a class="btn" href="/fees">See treatments &amp; fees</a>
+        <a class="btn ghost" href="/referrals">I'm a dentist referring</a>
+      </div>
+    </div>
+
+    <p class="hint" aria-hidden="true">scroll</p>
+  </div>
+</section>

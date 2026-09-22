@@ -1,0 +1,98 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import { site } from '../../site.config.mjs';
+const f = site.foi;
+const a = site.contact.address;
+// POL-70 simplificado, no resumido: están las siete clases, las tres
+// exenciones, los dos plazos, el límite de costes y la vía de revisión.
+// Lo que cambia es el registro — el documento está escrito para un lector
+// que ya sabe qué es un publication scheme, y esta página para uno que no.
+---
+<Base title="Freedom of Information"
+      description="Regent Orthodontics' freedom of information publication scheme: what information about Health and Social Care orthodontic services is published, how to ask for it, and what it costs.">
+  <PageHead eyebrow="Freedom of Information"
+            docName="Publication Scheme and Guide to Information"
+            title="What we publish, and how to ask for the rest."
+            lede="The practice will be a public authority for one part of what it does — Health and Social Care treatment — and this page is the scheme that says what information about it we make available." />
+
+  <section>
+    <div class="wrap prose narrow">
+      {f.confirmed === false && (
+        <p class="warnbar"><span>{f.draftNote}</span></p>
+      )}
+
+      {/* Antes que ninguna otra cosa: la mayoría de quien llega aquí busca
+           su propia historia clínica, y este no es el camino. */}
+      <p class="hand">{f.notPersonal}</p>
+
+      <div class="blk">
+        <h2>Why this page exists</h2>
+        {f.why.map((p) => <p>{p}</p>)}
+        <p class="basis">Under {f.basis}, following {f.model}. Kept by the {f.owner}
+          {' '}as {f.policyRef} {f.version}.</p>
+      </div>
+
+      <div class="blk">
+        <h2>What we commit to</h2>
+        <ul class="ticks">
+          {f.commitments.map((c) => <li><span>{c}</span></li>)}
+        </ul>
+      </div>
+
+      <div class="blk">
+        <h2>What we do not publish</h2>
+        <p>{f.exempt}</p>
+      </div>
+
+      <div class="blk">
+        <h2>How to ask</h2>
+        <ul class="ticks">
+          {f.howToAsk.map((h) => <li><span>{h}</span></li>)}
+        </ul>
+        <p class="em">Write to <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>,
+          or to {a.street}, {a.locality}, {a.region} {a.postcode}.</p>
+      </div>
+
+      <div class="blk">
+        <h2>What it costs</h2>
+        <p>{f.charges}</p>
+      </div>
+
+      <div class="blk">
+        <h2>If you are unhappy with our answer</h2>
+        <p>{f.review}</p>
+        <p class="ico">{site.privacy.ico.name}, {f.icoAddress}.
+          {' '}{f.icoPhone} · <a href={site.privacy.ico.url}>{site.privacy.ico.url.replace(/^https?:\/\//, '')}</a></p>
+        <p class="small">{f.dataNote} That route is on our
+          {' '}<a href="/privacy">privacy page</a>, and complaints about treatment go through our
+          {' '}<a href="/complaints">complaints procedure</a>.</p>
+      </div>
+
+      <div class="blk">
+        <h2>Who is responsible</h2>
+        <p>{f.responsibility}</p>
+      </div>
+
+      <div class="blk">
+        <h2>The full scheme</h2>
+        <p>{f.fullScheme}</p>
+        <p class="em">Ask at reception, or write to
+          {' '}<a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>.</p>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .narrow{max-width:72ch}
+  .blk{padding:34px 0;border-top:1px solid var(--line)}
+  .prose a{color:var(--gold-dim)}
+  .hand{border-left:2px solid var(--gold);padding:2px 0 2px 20px;color:var(--ink-soft);
+        font-size:16px;max-width:66ch;margin-bottom:8px}
+  .warnbar{margin-bottom:30px}
+  .basis{font-size:14.5px;padding-left:18px;border-left:1px solid var(--line);margin-top:22px}
+  .em{color:var(--ink);font-weight:500;margin-top:22px}
+  .ico{font-size:15px;margin-top:18px}
+  .small{font-size:14.5px;margin-top:18px}
+</style>

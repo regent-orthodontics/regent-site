@@ -1,0 +1,103 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import { site } from '../../site.config.mjs';
+// POL-57 §3 deja las limitaciones conocidas como [TBC] y avisa de por qué:
+// "A statement that claims full compliance without testing is worse than no
+// statement, because it tells a disabled user the problem must be theirs".
+// Lo que sigue separa lo que se ha comprobado de lo que no, en vez de
+// declarar conformidad en bloque.
+const comprobado = [
+  'Contrast, on all 14 colour pairs the site uses, in the cream pages, in the black treatment pages and at both ends of the home page, where the background moves from black to cream. The lowest is 4.51:1, against the 4.5:1 that AA requires',
+  'Every page carries one h1, and heading levels run in order without skipping one',
+  'Every image has alternative text',
+  'A link to skip the navigation, so the keyboard does not have to walk through the menu on every page',
+  'All the content is readable with JavaScript turned off',
+  'Animation stops for anyone whose system asks for reduced motion — including the rotating bracket on the home page, which becomes a still image',
+  'The page structure uses real landmarks, and nothing overrides the natural tab order',
+  'Every one of the 19 pages laid out in a window 320 pixels wide — what you get zooming to 400% on a laptop — with nothing running off the side and nothing needing to be scrolled sideways to read',
+];
+const pendiente = [
+  'Testing with an actual screen reader, by someone who uses one',
+  'A full keyboard-only walkthrough of every journey, rather than the structural checks above',
+  'Testing by disabled users, which is the only test that finds what the others miss',
+];
+---
+<Base title="Accessibility"
+      description="How accessible the Regent Orthodontics website is, what has been tested and what has not, and how to reach us if you cannot use part of it.">
+  <PageHead eyebrow="Accessibility"
+            title="What works, and what we have not tested yet."
+            lede="We aim to meet level AA of the Web Content Accessibility Guidelines 2.2. This page says how far we have got, because a statement that claims more than that tells you the problem must be yours." />
+
+  <section>
+    <div class="wrap prose narrow">
+      <div class="blk">
+        <h2>Our commitment</h2>
+        <p>We want as many people as possible to be able to use this website. Meeting level AA
+          means, among other things, that you should be able to navigate the site with a keyboard
+          alone, use it with a screen reader, resize the text up to 200% without the page breaking,
+          and read the text against the background without straining.</p>
+        <p>These regulations do not apply to a private practice: they apply to public sector
+          bodies. We publish this anyway, because we owe a duty to make reasonable adjustments
+          under the Disability Discrimination Act 1995, and because someone who cannot use the
+          website cannot easily become a patient.</p>
+      </div>
+
+      <div class="blk">
+        <h2>Getting into the building</h2>
+        <p>Accessibility of the website sits alongside accessibility of the practice itself.
+          Patients who use a wheelchair, or who cannot manage the staircase, are seen in Surgery 1
+          on the ground floor, which has level access from the street and an accessible WC.</p>
+      </div>
+
+      <div class="blk">
+        <h2>What we have checked</h2>
+        <ul class="ticks">{comprobado.map((i) => <li><span>{i}</span></li>)}</ul>
+      </div>
+
+      <div class="blk">
+        <h2>What we have not checked yet</h2>
+        <p>These are the known limitations of this site today. They are here rather than left out,
+          because you are entitled to know where you stand before you spend your time.</p>
+        <ul class="ticks no">{pendiente.map((i) => <li><span>{i}</span></li>)}</ul>
+        <p>Where content comes from a third party we may not control its accessibility. At present
+          nothing on this site is loaded from anywhere else — the map is an image we generate, not
+          an embedded service — so the question does not arise. If that changes, we will say so
+          here and provide the same information another way.</p>
+      </div>
+
+      <div class="blk">
+        <h2>If you cannot use part of this site</h2>
+        <p>Tell us and we will help. If you cannot use the website to find what you need or to
+          contact us, write to
+          {' '}<a href={`mailto:${site.contact.email}`}>{site.contact.email}</a> or come in, and we
+          will give you the same information and make the same arrangements.</p>
+        <p class="em">You will never be disadvantaged, and nothing we offer is available only
+          through this website.</p>
+        <p>We provide information in alternative formats on request and at no charge, including
+          large print and easy-read, and we arrange interpretation, translation and sign language
+          support. Tell us what would help and we will arrange it.</p>
+      </div>
+
+      <div class="blk">
+        <h2>Telling us about a problem</h2>
+        <p>If you find a problem with the accessibility of this site, or you think we are not
+          meeting the standard set out here, tell the Registered Manager:
+          {' '}<a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>. We will
+          acknowledge it, tell you what we can do and by when, and record it.</p>
+        <p>If our answer does not satisfy you, you can complain under our
+          {' '}<a href="/complaints">complaints procedure</a>, and you can contact the Equality
+          Commission for Northern Ireland for advice about your rights under the Disability
+          Discrimination Act 1995.</p>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .narrow{max-width:72ch}
+  .blk{padding:34px 0;border-top:1px solid var(--line)}
+  .blk:first-of-type{border-top:0;padding-top:0}
+  .prose a{color:var(--gold-dim)}
+  .prose .em{color:var(--ink);font-weight:500}
+</style>

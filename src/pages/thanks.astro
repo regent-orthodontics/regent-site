@@ -1,0 +1,48 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import { site } from '../../site.config.mjs';
+// Página propia y no /contact?sent=1: el sitio se compila estático, así que
+// los parámetros de la URL no existen en tiempo de compilación y la página
+// habría seguido enseñando el formulario. Así el acuse funciona también sin
+// JavaScript, que es la condición que se comprueba en todo el sitio.
+---
+<Base title="Request received"
+      description="Regent Orthodontics has received your request for a consultation and will be in touch to arrange the appointment.">
+  <PageHead eyebrow="Thank you"
+            title="We have your details."
+            lede="Someone from the practice will be in touch to arrange the appointment." />
+
+  <section>
+    <div class="wrap prose narrow">
+      <div class="panel next">
+        <h2>What happens now</h2>
+        <ul class="ticks">
+          <li><span>We contact you to agree a time. Nothing is booked yet — the appointment is
+            arranged when we speak</span></li>
+          <li><span>The consultation itself is free, and nothing is fitted or decided on the
+            day</span></li>
+          <li><span>You leave knowing what the options are and roughly what each one would
+            cost</span></li>
+        </ul>
+      </div>
+
+      <p class="also">While you wait, you may want to read
+        {' '}<a href="/first-visit">what happens at the first visit</a> or
+        {' '}<a href="/fees">what treatment costs</a>.</p>
+
+      <p class="quiet">If something changes, or you need us sooner, email
+        <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>. We keep your details
+        only to arrange this appointment — <a href="/privacy">how we handle your information</a>.</p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .narrow{max-width:66ch}
+  .next{padding:32px 30px}
+  .next h2{font-size:21px;margin:0 0 20px}
+  .also{margin-top:30px}
+  .quiet{font-size:14.5px;margin-top:20px}
+  .prose a{color:var(--gold-dim)}
+</style>

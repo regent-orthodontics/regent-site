@@ -1,0 +1,75 @@
+---
+import { site } from '../../site.config.mjs';
+const c = site.compliance;
+const a = site.contact.address;
+const reviewed = new Date(c.lastReviewed).toLocaleDateString(site.locale, {
+  year: 'numeric', month: 'long', day: 'numeric',
+});
+---
+<section class="compliance" aria-labelledby="compliance-heading">
+  <h2 id="compliance-heading">Practice information</h2>
+
+  <div class="grid">
+    <div>
+      <h3>Contact</h3>
+      <address>
+        <strong>{site.name}</strong><br />
+        {a.street}<br />{a.locality}<br />{a.region} {a.postcode}
+      </address>
+      <p><a href={`mailto:${site.contact.email}`} data-live="email">{site.contact.email}</a></p>
+    </div>
+
+    {c.registrations.length > 0 && (
+      <div>
+        <h3>Our team</h3>
+        <ul class="plain">
+          {c.registrations.map((r) => (
+            <li>
+              <strong>{r.person}</strong> — {r.qualifications.join(' · ')} ({r.country})<br />
+              <span class="reg">Registration no. {r.number}{r.role && <> · {r.role}</>}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
+
+    {c.regulator && (
+      <div>
+        <h3>Our regulators</h3>
+        <p>{c.regulator.name}</p>
+        {c.regulator.phone && <p>{c.regulator.phone}</p>}
+        <p><a href={c.regulator.url} rel="noopener">{c.regulator.url.replace(/^https?:\/\//, '')}</a></p>
+        {/* El GDC regula a las personas; RQIA regula al establecimiento y es
+            la vía de escalado de todos los pacientes (POL-01 §6.1). */}
+        {c.complaints?.escalation?.rqia && (
+          <p class="escalation">{c.complaints.escalation.rqia.name}<br />
+            <a href={`mailto:${c.complaints.escalation.rqia.email}`}>{c.complaints.escalation.rqia.email}</a></p>
+        )}
+        <p class="escalation">ICO registration no. {site.privacy.ico.registration}</p>
+      </div>
+    )}
+
+  </div>
+
+  {/* Requisito en sectores regulados. No quitar. */}
+  <p class="reviewed">
+    This website was last reviewed on <time datetime={c.lastReviewed}>{reviewed}</time>.
+  </p>
+</section>
+
+<style>
+  .compliance { border-top: 1px solid var(--line); padding: 40px 0; font-size: 15px; }
+  .compliance h2 { font-size: 20px; margin: 0 0 24px; }
+  .compliance h3 { font-size: 13px; text-transform: uppercase; letter-spacing: .08em;
+                   color: var(--ink-soft); margin: 0 0 10px; font-weight: 600; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(220px,100%),1fr)); gap: 32px; }
+  address { font-style: normal; line-height: 1.6; }
+  .compliance p { margin: 0 0 6px; line-height: 1.6; }
+  .plain { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+  /* Iba pegada al nombre con un simple salto de línea. Es otro dato —el
+     número y el cargo— y necesita respirar respecto al título. */
+  .reg { color: var(--ink-soft); font-size: 14px; display: block; margin-top: 5px; }
+  .escalation { color: var(--ink-soft); }
+  .reviewed { margin-top: 32px; padding-top: 16px; border-top: 1px solid var(--line);
+              color: var(--ink-soft); font-size: 14px; }
+</style>
